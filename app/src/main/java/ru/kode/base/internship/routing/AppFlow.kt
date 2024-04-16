@@ -2,6 +2,7 @@ package ru.kode.base.internship.routing
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.romanzelenin.ui.home.ProductsHomeScreen
 import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.kode.base.core.di.SingleIn
 import ru.kode.base.core.routing.coordinator.BaseFlowCoordinator
@@ -50,6 +51,9 @@ object AppFlow : GraphFlow() {
     }
     animatedComposable(ScreenRoute.FeatureInProgress.route, ScreenTransitionAnimation.Horizontal) {
       FeatureInProgressScreen()
+    }
+    animatedComposable(ScreenRoute.ProductsHome.route, ScreenTransitionAnimation.Horizontal) {
+      ProductsHomeScreen()
     }
   }
 

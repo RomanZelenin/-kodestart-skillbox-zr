@@ -1,5 +1,6 @@
 package ru.kode.base.internship.routing.di
 
+import com.romanzelenin.ui.home.ProductsHomeViewModel
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.MergeSubcomponent
 import dagger.Binds
@@ -42,4 +43,9 @@ interface AppFlowUiModule {
   @IntoMap
   @ViewModelKey(EnterPasswordViewModel::class)
   fun bindEnterPasswordViewModel(model: EnterPasswordViewModel): BaseViewModel<*, *>
+
+  @Binds
+  @IntoMap
+  @ViewModelKey(ProductsHomeViewModel::class)
+  fun bindProductsHomeViewModel(model: ProductsHomeViewModel): BaseViewModel<*, *>
 }

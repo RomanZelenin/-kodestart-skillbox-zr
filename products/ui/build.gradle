@@ -1,0 +1,18 @@
+plugins {
+  id "android-library-convention"
+  id "dagger-convention"
+  id "android-compose-convention"
+}
+
+android {
+  namespace 'com.romanzelenin.ui'
+}
+
+dependencies {
+
+  api project(":core:ui:uikit")
+  api project(":auth:domain")
+  api project(':routing')
+
+  implementation libs.compose.material3
+}
