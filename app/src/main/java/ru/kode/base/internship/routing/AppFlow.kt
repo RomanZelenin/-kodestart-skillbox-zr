@@ -3,6 +3,7 @@ package ru.kode.base.internship.routing
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.romanzelenin.ui.home.ProductsHomeScreen
+import com.romanzelenin.ui.servernotfound.ServerNotFoundScreen
 import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.kode.base.core.di.SingleIn
 import ru.kode.base.core.routing.coordinator.BaseFlowCoordinator
@@ -35,7 +36,8 @@ object AppFlow : GraphFlow() {
         FlowEvent.EnterPasswordDismissed -> navController.popBackStack()
         FlowEvent.LoginRequested -> navController.navigate(ScreenRoute.EnterPassword.route)
         // TODO add navigation to next screen
-        FlowEvent.UserLoggedIn -> navController.navigate(ScreenRoute.FeatureInProgress.route)
+        FlowEvent.UserLoggedIn -> navController.navigate(ScreenRoute.ProductsHome.route)
+        FlowEvent.UserLoggedOut -> finish(Unit)
       }
     }
   }
@@ -54,6 +56,9 @@ object AppFlow : GraphFlow() {
     }
     animatedComposable(ScreenRoute.ProductsHome.route, ScreenTransitionAnimation.Horizontal) {
       ProductsHomeScreen()
+    }
+    animatedComposable(ScreenRoute.ServerNotFound.route, ScreenTransitionAnimation.Horizontal) {
+      ServerNotFoundScreen()
     }
   }
 
