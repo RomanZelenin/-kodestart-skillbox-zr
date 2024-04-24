@@ -1,4 +1,4 @@
-package com.romanzelenin.ui.component
+package ru.kode.base.internship.products.ui.component
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.romanzelenin.ui.home.CurrencySigns
+import ru.kode.base.internship.products.ui.home.CurrencySigns
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable

@@ -1,6 +1,5 @@
 package ru.kode.base.internship.routing.di
 
-import com.romanzelenin.ui.home.ProductsHomeViewModel
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.MergeSubcomponent
 import dagger.Binds
@@ -11,6 +10,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.kode.base.core.BaseViewModel
 import ru.kode.base.core.di.SingleIn
 import ru.kode.base.core.viewmodel.ViewModelKey
+import ru.kode.base.internship.products.ui.home.ProductsHomeViewModel
 import ru.kode.base.internship.routing.AppFlow
 import ru.kode.base.internship.routing.FlowEvent
 import ru.kode.base.internship.ui.identification.UserIdentificationViewModel

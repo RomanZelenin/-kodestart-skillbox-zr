@@ -1,4 +1,4 @@
-package com.romanzelenin.ui.component
+package ru.kode.base.internship.products.ui.component
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
@@ -9,13 +9,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.romanzelenin.ui.R
-import com.romanzelenin.ui.home.CardStatus
+import ru.kode.base.internship.products.ui.R
+import ru.kode.base.internship.products.ui.home.Card
+import ru.kode.base.internship.products.ui.home.CardStatus
+import ru.kode.base.internship.products.ui.home.CardType
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
-fun CardItem(modifier: Modifier = Modifier, title: String, status: CardStatus, icon: Int) {
+fun CardItem(modifier: Modifier = Modifier, card: Card) {
   ListItem(
     modifier = modifier,
     colors = ListItemDefaults.colors(containerColor = AppTheme.colors.backgroundSecondary),
@@ -24,23 +27,26 @@ fun CardItem(modifier: Modifier = Modifier, title: String, status: CardStatus, i
     },
     headlineContent = {
       Text(
-        text = title,
+        text = card.title,
         style = AppTheme.typography.body2,
         color = AppTheme.colors.textPrimary
       )
     },
     supportingContent = {
       Text(
-        text = status.title,
+        text = if (card.status == CardStatus.ACTIVE)
+          stringResource(id = card.type.id)
+        else
+          stringResource(id = card.status.id),
         style = AppTheme.typography.body2,
-        color = if (status == CardStatus.BLOCKED)
+        color = if (card.status == CardStatus.BLOCKED)
           AppTheme.colors.indicatorContendError
         else
           AppTheme.colors.textTertiary
       )
     },
     trailingContent = {
-      Image(painter = painterResource(id = icon), contentDescription = null)
+      Image(painter = painterResource(id = card.icon), contentDescription = null)
     }
   )
 }
@@ -50,9 +56,12 @@ fun CardItem(modifier: Modifier = Modifier, title: String, status: CardStatus, i
 private fun CardItemLightPreview() {
   AppTheme {
     CardItem(
-      title = "Карта зарплатная",
-      status = CardStatus.PHYSICAL,
-      icon = R.drawable.ic_master_card
+      card = Card(
+        title = "Карта зарплатная",
+        status = CardStatus.ACTIVE,
+        type = CardType.PHYSICAL,
+        icon = R.drawable.ic_master_card
+      )
     )
   }
 }
@@ -62,9 +71,12 @@ private fun CardItemLightPreview() {
 private fun CardItemNightPreview() {
   AppTheme {
     CardItem(
-      title = "Карта зарплатная",
-      status = CardStatus.PHYSICAL,
-      icon = R.drawable.ic_master_card
+      card = Card(
+        title = "Карта зарплатная",
+        status = CardStatus.ACTIVE,
+        type = CardType.PHYSICAL,
+        icon = R.drawable.ic_master_card
+      )
     )
   }
 }

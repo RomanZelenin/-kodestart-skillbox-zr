@@ -1,4 +1,4 @@
-package com.romanzelenin.ui.home
+package ru.kode.base.internship.products.ui.home
 
 import ru.kode.base.core.BaseViewIntents
 
@@ -7,4 +7,5 @@ class ProductsHomeIntents : BaseViewIntents() {
   val loadAccounts = intent(name = "loadAccounts")
   val loadDeposits = intent(name = "loadDeposits")
   val refresh = intent(name = "refresh")
+  val expandAccount = intent<Account.Id>(name = "expandAccount")
 }

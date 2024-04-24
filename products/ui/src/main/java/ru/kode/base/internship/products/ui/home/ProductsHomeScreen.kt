@@ -1,4 +1,4 @@
-package com.romanzelenin.ui.home
+package ru.kode.base.internship.products.ui.home
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -32,10 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,12 +40,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.romanzelenin.ui.R
-import com.romanzelenin.ui.component.AccountItem
-import com.romanzelenin.ui.component.CardItem
-import com.romanzelenin.ui.component.DepositItem
 import com.valentinilk.shimmer.Shimmer
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
@@ -56,6 +48,10 @@ import com.valentinilk.shimmer.shimmer
 import ru.kode.base.core.rememberViewIntents
 import ru.kode.base.core.viewmodel.daggerViewModel
 import ru.kode.base.internship.core.domain.entity.LceState
+import ru.kode.base.internship.products.ui.R
+import ru.kode.base.internship.products.ui.component.AccountItem
+import ru.kode.base.internship.products.ui.component.CardItem
+import ru.kode.base.internship.products.ui.component.DepositItem
 import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
@@ -71,7 +67,6 @@ fun ProductsHomeScreen(viewModel: ProductsHomeViewModel = daggerViewModel()) =
       refreshing = state.isRefreshing,
       onRefresh = { intents.refresh() }
     )
-
     Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
       Scaffold(containerColor = AppTheme.colors.backgroundPrimary, topBar = {
         MediumTopAppBar(
@@ -96,107 +91,9 @@ fun ProductsHomeScreen(viewModel: ProductsHomeViewModel = daggerViewModel()) =
             .padding(it)
             .nestedScroll(appBarBehaviour.nestedScrollConnection)
         ) {
-          item {
-            Card(
-              modifier = Modifier.fillMaxWidth(),
-              colors = CardDefaults.cardColors(containerColor = AppTheme.colors.backgroundSecondary)
-            ) {
-              Text(
-                modifier = Modifier.padding(16.dp),
-                text = stringResource(id = R.string.accounts),
-                color = AppTheme.colors.textTertiary,
-                style = AppTheme.typography.bodySemibold
-              )
-              when (state.accountsLceState) {
-                is LceState.Error -> {
-                  ErrorLoadingPartContent(onClickRefresh = { intents.loadAccounts() })
-                }
-
-                LceState.Loading -> {
-                  ListShimmerContents(size = 3, shimmerInstance = shimmerInstance)
-                }
-
-                LceState.Content -> {
-                  Column {
-                    for ((account, cards) in state.loadedAccounts.entries) {
-                      var isExpanded by remember { mutableStateOf(false) }
-                      var currentDp by remember { mutableStateOf(if (isExpanded) Dp.Infinity else 0.dp) }
-                      val animateDpExpanded = animateDpAsState(targetValue = currentDp, label = "")
-                      AccountItem(
-                        title = account.title,
-                        amount = account.amount,
-                        sign = account.sign,
-                        isExpanded = isExpanded,
-                        onClick = {
-                          isExpanded = !isExpanded
-                          currentDp = if (isExpanded) (75 * state.loadedAccounts[account]!!.size).dp else 0.dp
-                        }
-                      )
-                      Column(modifier = Modifier.height(animateDpExpanded.value)) {
-                        cards.forEachIndexed { index, card ->
-                          CardItem(
-                            modifier = Modifier.clickable { },
-                            title = card.title,
-                            status = card.status,
-                            icon = card.icon
-                          )
-                          if (index < state.loadedAccounts[account]!!.size - 1)
-                            HorizontalDivider(
-                              color = AppTheme.colors.contendSecondary,
-                              modifier = Modifier.offset(56.dp)
-                            )
-                        }
-                      }
-                    }
-                  }
-                }
-
-                LceState.None -> TODO()
-              }
-            }
-          }
+          accounts(state = state, intents = intents, shimmer = shimmerInstance)
           item { Spacer(modifier = Modifier.height(16.dp)) }
-          item {
-            Card(
-              modifier = Modifier.fillMaxSize(),
-              colors = CardDefaults.cardColors(containerColor = AppTheme.colors.backgroundSecondary)
-            ) {
-              Text(
-                modifier = Modifier.padding(16.dp),
-                text = stringResource(id = R.string.deposits),
-                color = AppTheme.colors.textTertiary,
-                style = AppTheme.typography.bodySemibold
-              )
-              when (state.depositsLceState) {
-                LceState.Loading -> {
-                  ListShimmerContents(size = 4, shimmerInstance = shimmerInstance)
-                }
-
-                LceState.Content -> {
-                  Column {
-                    state.loadedDeposits.forEachIndexed { index, deposit ->
-                      DepositItem(
-                        modifier = Modifier.clickable { },
-                        title = deposit.title,
-                        amount = deposit.amount,
-                        sign = deposit.sign,
-                        rate = deposit.rate,
-                        date = deposit.date
-                      )
-                      if (index < state.loadedDeposits.size - 1)
-                        HorizontalDivider(color = AppTheme.colors.contendSecondary, modifier = Modifier.offset(70.dp))
-                    }
-                  }
-                }
-
-                is LceState.Error -> {
-                  ErrorLoadingPartContent(onClickRefresh = { intents.loadDeposits() })
-                }
-
-                LceState.None -> TODO()
-              }
-            }
-          }
+          deposits(state = state, intents = intents, shimmer = shimmerInstance)
         }
       }
       PullRefreshIndicator(
@@ -208,10 +105,113 @@ fun ProductsHomeScreen(viewModel: ProductsHomeViewModel = daggerViewModel()) =
     }
   }
 
+private fun LazyListScope.accounts(state: ProductsHomeViewState, intents: ProductsHomeIntents, shimmer: Shimmer) {
+  item {
+    Card(
+      modifier = Modifier.fillMaxWidth(),
+      colors = CardDefaults.cardColors(containerColor = AppTheme.colors.backgroundSecondary)
+    ) {
+      Text(
+        modifier = Modifier.padding(16.dp),
+        text = stringResource(id = R.string.accounts),
+        color = AppTheme.colors.textTertiary,
+        style = AppTheme.typography.bodySemibold
+      )
+      when (state.accountsLceState) {
+        is LceState.Error -> {
+          ErrorLoadingPartContent(onClickRefresh = { intents.loadAccounts() })
+        }
+
+        LceState.Loading -> {
+          ListShimmerContents(size = 3, shimmerInstance = shimmer)
+        }
+
+        LceState.Content -> {
+          for ((account, cards) in state.loadedAccounts.entries) {
+            val isExpanded = state.listExpandedAccounts.contains(account.id)
+            val currentDp = if (isExpanded) (75 * state.loadedAccounts[account]!!.size).dp else 0.dp
+            val animateDpExpanded = animateDpAsState(targetValue = currentDp, label = "")
+            AccountItem(
+              title = account.title,
+              money = account.money,
+              isExpanded = isExpanded,
+              onClick = {
+                intents.expandAccount(account.id)
+              }
+            )
+            Column(modifier = Modifier.height(animateDpExpanded.value)) {
+              cards.forEachIndexed { index, card ->
+                CardItem(
+                  modifier = Modifier.clickable { },
+                  card = Card(
+                    title = card.title,
+                    status = card.status,
+                    icon = card.icon,
+                    type = card.type
+                  ),
+                )
+                if (index < state.loadedAccounts[account]!!.size - 1)
+                  HorizontalDivider(
+                    color = AppTheme.colors.contendSecondary,
+                    modifier = Modifier.offset(56.dp)
+                  )
+              }
+            }
+          }
+        }
+
+        LceState.None -> {}
+      }
+    }
+  }
+}
+
+private fun LazyListScope.deposits(state: ProductsHomeViewState, intents: ProductsHomeIntents, shimmer: Shimmer) {
+  item {
+    Card(
+      modifier = Modifier.fillMaxSize(),
+      colors = CardDefaults.cardColors(containerColor = AppTheme.colors.backgroundSecondary)
+    ) {
+      Text(
+        modifier = Modifier.padding(16.dp),
+        text = stringResource(id = R.string.deposits),
+        color = AppTheme.colors.textTertiary,
+        style = AppTheme.typography.bodySemibold
+      )
+      when (state.depositsLceState) {
+        LceState.Loading -> {
+          ListShimmerContents(size = 4, shimmerInstance = shimmer)
+        }
+
+        LceState.Content -> {
+          state.loadedDeposits.forEachIndexed { index, deposit ->
+            DepositItem(
+              modifier = Modifier.clickable { },
+              title = deposit.title,
+              amount = deposit.amount,
+              sign = deposit.sign,
+              rate = deposit.rate,
+              date = deposit.date
+            )
+            if (index < state.loadedDeposits.size - 1)
+              HorizontalDivider(color = AppTheme.colors.contendSecondary, modifier = Modifier.offset(70.dp))
+          }
+        }
+
+        is LceState.Error -> {
+          ErrorLoadingPartContent(onClickRefresh = { intents.loadDeposits() })
+        }
+
+        LceState.None -> {}
+      }
+    }
+  }
+}
+
 @Composable
 private fun ListShimmerContents(size: Int, shimmerInstance: Shimmer = rememberShimmer(ShimmerBounds.View)) {
   Column {
-    for (i in 0 until size) {
+    repeat(size) {
       ListItem(
         colors = ListItemDefaults.colors(containerColor = AppTheme.colors.backgroundSecondary),
         leadingContent = {

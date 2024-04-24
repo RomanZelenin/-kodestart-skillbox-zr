@@ -1,4 +1,4 @@
-package com.romanzelenin.ui.home
+package ru.kode.base.internship.products.ui.home
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.dimsuz.unicorn2.Machine
@@ -35,8 +35,8 @@ class ProductsHomeViewModel @Inject constructor(
       }
 
       onEach(ProductsHomeMocks.accounts) {
-        transitionTo { state, payload ->
-          state.copy(loadedAccounts = payload)
+        transitionTo { state, accountList ->
+          state.copy(loadedAccounts = accountList)
         }
       }
 
@@ -47,23 +47,33 @@ class ProductsHomeViewModel @Inject constructor(
       }
 
       onEach(ProductsHomeMocks.deposits) {
-        transitionTo { state, payload ->
-          state.copy(loadedDeposits = payload)
+        transitionTo { state, depositList ->
+          state.copy(loadedDeposits = depositList)
         }
       }
 
       onEach(intent(ProductsHomeIntents::loadDeposits)) {
-        transitionTo { state, payload ->
+        transitionTo { state, _ ->
           state.copy(depositsLceState = LceState.Loading)
         }
-        action { state, newState, payload -> ProductsHomeMocks.fetchDeposits() }
+        action { _, _, _ -> ProductsHomeMocks.fetchDeposits() }
       }
 
       onEach(intent(ProductsHomeIntents::loadAccounts)) {
-        transitionTo { state, payload ->
+        transitionTo { state, _ ->
           state.copy(accountsLceState = LceState.Loading)
         }
-        action { state, newState, payload -> ProductsHomeMocks.fetchAccounts() }
+        action { _, _, _ -> ProductsHomeMocks.fetchAccounts() }
+      }
+
+      onEach(intent(ProductsHomeIntents::expandAccount)) {
+        transitionTo { state, accountId ->
+          if (state.listExpandedAccounts.contains(accountId)) {
+            state.copy(listExpandedAccounts = state.listExpandedAccounts.filter { it != accountId })
+          } else {
+            state.copy(listExpandedAccounts = ArrayList(state.listExpandedAccounts).apply { add(accountId) })
+          }
+        }
       }
 
       onEach(intent(ProductsHomeIntents::navigateOnBack)) {

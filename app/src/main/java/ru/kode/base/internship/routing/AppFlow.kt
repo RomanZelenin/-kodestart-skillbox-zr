@@ -2,8 +2,6 @@ package ru.kode.base.internship.routing
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.romanzelenin.ui.home.ProductsHomeScreen
-import com.romanzelenin.ui.servernotfound.ServerNotFoundScreen
 import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.kode.base.core.di.SingleIn
 import ru.kode.base.core.routing.coordinator.BaseFlowCoordinator
@@ -12,6 +10,7 @@ import ru.kode.base.core.routing.utils.ScreenTransitionAnimation
 import ru.kode.base.core.routing.utils.animatedComposable
 import ru.kode.base.core.viewmodel.ViewModelProviders
 import ru.kode.base.core.viewmodel.ViewModelStore
+import ru.kode.base.internship.products.ui.home.ProductsHomeScreen
 import ru.kode.base.internship.routing.di.AppFlowScope
 import ru.kode.base.internship.ui.featureinprogress.FeatureInProgressScreen
 import ru.kode.base.internship.ui.identification.UserIdentificationScreen
@@ -57,9 +56,9 @@ object AppFlow : GraphFlow() {
     animatedComposable(ScreenRoute.ProductsHome.route, ScreenTransitionAnimation.Horizontal) {
       ProductsHomeScreen()
     }
-    animatedComposable(ScreenRoute.ServerNotFound.route, ScreenTransitionAnimation.Horizontal) {
-      ServerNotFoundScreen()
-    }
+ /*   animatedComposable(ScreenRoute.ServerNotFound.route, ScreenTransitionAnimation.Horizontal) {
+      ServerNotFound()
+    }*/
   }
 
   private val ScreenRoute.route: String

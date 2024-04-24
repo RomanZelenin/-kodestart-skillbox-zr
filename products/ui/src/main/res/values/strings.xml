@@ -10,4 +10,8 @@
   <string name="refresh">Обновить</string>
   <string name="failed_load_part_content">Не удалось загрузить\nчасть контента</string>
   <string name="something_went_wrong">Упс, что-то пошло не так</string>
+  <string name="physical">Физическая</string>
+  <string name="virtual">Виртуальная</string>
+  <string name="blocked">Заблокирована</string>
+  <string name="active">Активная</string>
 </resources>
