@@ -1,7 +1,6 @@
 package ru.kode.base.internship
 
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity

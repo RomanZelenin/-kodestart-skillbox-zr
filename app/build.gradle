@@ -76,6 +76,7 @@ dependencies {
   implementation project(":routing")
   api project(":core:data")
   api project(":auth:ui")
+  api project(":products:ui")
 
   implementation libs.coil
   implementation libs.firebase.core

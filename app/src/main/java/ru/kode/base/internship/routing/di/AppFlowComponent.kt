@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.kode.base.core.BaseViewModel
 import ru.kode.base.core.di.SingleIn
 import ru.kode.base.core.viewmodel.ViewModelKey
+import ru.kode.base.internship.products.ui.home.ProductsHomeViewModel
 import ru.kode.base.internship.routing.AppFlow
 import ru.kode.base.internship.routing.FlowEvent
 import ru.kode.base.internship.ui.identification.UserIdentificationViewModel
@@ -42,4 +43,9 @@ interface AppFlowUiModule {
   @IntoMap
   @ViewModelKey(EnterPasswordViewModel::class)
   fun bindEnterPasswordViewModel(model: EnterPasswordViewModel): BaseViewModel<*, *>
+
+  @Binds
+  @IntoMap
+  @ViewModelKey(ProductsHomeViewModel::class)
+  fun bindProductsHomeViewModel(model: ProductsHomeViewModel): BaseViewModel<*, *>
 }
