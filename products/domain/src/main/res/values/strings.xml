@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="physical">Физическая</string>
+  <string name="virtual">Виртуальная</string>
+  <string name="blocked">Заблокирована</string>
+  <string name="active">Активная</string>
+</resources>
