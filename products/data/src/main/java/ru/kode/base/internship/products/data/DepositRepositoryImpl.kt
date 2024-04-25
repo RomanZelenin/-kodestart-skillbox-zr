@@ -10,11 +10,12 @@ import ru.kode.base.internship.products.domain.entity.CurrencySigns
 import ru.kode.base.internship.products.domain.entity.Deposit
 import ru.kode.base.internship.products.domain.entity.DepositTerms
 import javax.inject.Inject
+import kotlin.random.Random
 
 @ContributesBinding(AppScope::class)
 class DepositRepositoryImpl @Inject constructor() : DepositRepository {
   override val deposits: Flow<List<Deposit>>
-    get() = flowOf(mockDeposits)
+    get() = flowOf(mockDeposits.shuffled().subList(0, Random.nextInt(1, mockDeposits.size)))
 
   override fun term(id: Deposit.Id): Flow<DepositTerms> {
     return flow {

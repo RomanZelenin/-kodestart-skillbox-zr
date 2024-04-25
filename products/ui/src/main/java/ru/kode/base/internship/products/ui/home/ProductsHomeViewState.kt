@@ -16,7 +16,7 @@ data class ProductsHomeViewState(
   val terms: List<DepositTerms> = emptyList(),
   val errorMessage: String? = null,
   val isRefreshing: Boolean = false,
-  val listExpandedAccounts: List<Account.Id> = mutableListOf(),
+  val listExpandedAccounts: List<Account.Id> = emptyList(),
   val listCards: Map<Account.Id, Pair<LceState, List<Card>>> = emptyMap(),
 )
 

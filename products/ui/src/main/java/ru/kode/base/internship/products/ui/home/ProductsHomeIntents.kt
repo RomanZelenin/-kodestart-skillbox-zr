@@ -9,6 +9,6 @@ class ProductsHomeIntents : BaseViewIntents() {
   val loadAccounts = intent(name = "loadAccounts")
   val loadDeposits = intent(name = "loadDeposits")
   val refresh = intent(name = "refresh")
-  val expandAccount = intent<Account.Id>(name = "expandAccount")
+  val expandAccount = intent<Pair<Account.Id,List<Card.Id>>>(name = "expandAccount")
   val showCardDetails = intent<Card.Id>(name = "showCardDetails")
 }

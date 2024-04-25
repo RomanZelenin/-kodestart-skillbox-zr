@@ -28,23 +28,17 @@ class LoadingCardsByIdAccountUseCase @Inject constructor(
     get() = stateFlow.map { it.cards }.distinctUntilChanged()
 
 
-  suspend operator fun invoke(accountId: Account.Id) {
-    loadAccountCards(accountId)
+  suspend operator fun invoke(accountId: Account.Id, cardsId: List<Card.Id>) {
+    loadAccountCards(accountId, cardsId)
   }
 
-  private suspend fun loadAccountCards(accountId: Account.Id) {
+  private suspend fun loadAccountCards(accountId: Account.Id, cardsId: List<Card.Id>) {
     setState {
       cards[accountId] = LceState.Loading to emptyList()
       copy(cards = cards)
     }
-
     val listCards = mutableListOf<Card>()
-    accountsRepository.accounts.collect {
-      it.first { it.id == accountId }.attachedCards.forEach {
-        listCards.add(cardRepository.cardDetails(it).first())
-      }
-    }
-
+    cardsId.forEach { listCards.add(cardRepository.cardDetails(it).first()) }
     setState {
       cards[accountId] = LceState.Content to listCards
       copy(cards = cards)
