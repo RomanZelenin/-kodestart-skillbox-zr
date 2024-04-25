@@ -10,13 +10,14 @@ import ru.kode.base.internship.products.domain.entity.Card
 import ru.kode.base.internship.products.domain.entity.CurrencySigns
 import ru.kode.base.internship.products.domain.entity.Money
 import javax.inject.Inject
+import kotlin.random.Random
 
 @ContributesBinding(AppScope::class)
 class AccountsRepositoryImpl @Inject constructor() : AccountsRepository {
   override val accounts: Flow<List<Account>>
     get() {
     return  flow {
-        emit(mockAccounts)
+        emit(mockAccounts.shuffled().subList(0,Random.nextInt(1,mockAccounts.size)))
       }
     }
 

@@ -48,16 +48,16 @@ class ProductsHomeViewModel @Inject constructor(
       }
 
       onEach(intent(ProductsHomeIntents::expandAccount)) {
-        transitionTo { state, accountId ->
-          if (state.listExpandedAccounts.contains(accountId)) {
-            state.copy(listExpandedAccounts = state.listExpandedAccounts.filter { it != accountId })
+        transitionTo { state, pair ->
+          if (state.listExpandedAccounts.contains(pair.first)) {
+            state.copy(listExpandedAccounts = state.listExpandedAccounts.filter { it != pair.first })
           } else {
-            state.copy(listExpandedAccounts = ArrayList(state.listExpandedAccounts).apply { add(accountId) })
+            state.copy(listExpandedAccounts = ArrayList(state.listExpandedAccounts).apply { add(pair.first) })
           }
         }
-        action { state, newState, accountId ->
-          if (!state.listExpandedAccounts.contains(accountId)) {
-            loadingCardsByIdAccountUseCase(accountId)
+        action { state, _, pair ->
+          if (!state.listExpandedAccounts.contains(pair.first)) {
+            loadingCardsByIdAccountUseCase(pair.first, pair.second)
           }
         }
       }
