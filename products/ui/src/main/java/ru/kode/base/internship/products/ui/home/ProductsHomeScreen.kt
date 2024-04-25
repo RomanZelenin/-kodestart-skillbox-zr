@@ -130,6 +130,9 @@ private fun LazyListScope.accounts(state: ProductsHomeViewState, intents: Produc
         LceState.Content -> {
           for (account in state.loadedAccounts) {
             val isExpanded = state.listExpandedAccounts.contains(account.id)
+            val currentDp = if (isExpanded) (72.dp * account.attachedCards.size) else 0.dp
+            val animateDpExpanded = animateDpAsState(targetValue = currentDp, label = "")
+
             AccountItem(
               title = account.title,
               money = account.money,
@@ -140,8 +143,6 @@ private fun LazyListScope.accounts(state: ProductsHomeViewState, intents: Produc
             state.listCards[account.id]?.let {
               when (it.first) {
                 LceState.Content -> {
-                  val currentDp = if (isExpanded) (75 * account.attachedCards.size).dp else 0.dp
-                  val animateDpExpanded = animateDpAsState(targetValue = currentDp, label = "")
                   Column(modifier = Modifier.height(animateDpExpanded.value)) {
                     it.second.forEachIndexed { index, card ->
                       CardItem(
@@ -164,7 +165,7 @@ private fun LazyListScope.accounts(state: ProductsHomeViewState, intents: Produc
 
                 is LceState.Error -> {}
                 LceState.Loading -> {
-                  Timber.d("Loading ${account.id}")
+                  ListShimmerContents(size = 3, shimmer)
                 }
 
                 LceState.None -> {}

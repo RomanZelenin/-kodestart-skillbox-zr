@@ -37,7 +37,6 @@ class LoadingCardsByIdAccountUseCase @Inject constructor(
       cards[accountId] = LceState.Loading to emptyList()
       copy(cards = cards)
     }
-
     val listCards = mutableListOf<Card>()
     accountsRepository.accounts.collect {
       it.first { it.id == accountId }.attachedCards.forEach {

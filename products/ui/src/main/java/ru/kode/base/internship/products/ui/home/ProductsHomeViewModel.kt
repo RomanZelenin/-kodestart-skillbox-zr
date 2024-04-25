@@ -26,6 +26,7 @@ class ProductsHomeViewModel @Inject constructor(
       }
 
       onEach(intent(ProductsHomeIntents::refresh)) {
+        transitionTo { state, _ -> state.copy(listExpandedAccounts = emptyList()) }
         action { _, _, _ -> executeAsync { fetchProductsUseCase() } }
       }
 
@@ -67,15 +68,11 @@ class ProductsHomeViewModel @Inject constructor(
 
 
       onEach(fetchDepositsUseCase.depositState) {
-        transitionTo { state, lceState ->
-          state.copy(depositsLceState = lceState)
-        }
+        transitionTo { state, lceState -> state.copy(depositsLceState = lceState) }
       }
 
       onEach(fetchDepositsUseCase.deposits) {
-        transitionTo { state, depositList ->
-          state.copy(loadedDeposits = depositList)
-        }
+        transitionTo { state, depositList -> state.copy(loadedDeposits = depositList) }
       }
 
       onEach(intent(ProductsHomeIntents::loadDeposits)) {
