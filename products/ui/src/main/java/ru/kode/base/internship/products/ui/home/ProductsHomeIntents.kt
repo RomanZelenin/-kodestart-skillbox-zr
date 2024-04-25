@@ -1,6 +1,7 @@
 package ru.kode.base.internship.products.ui.home
 
 import ru.kode.base.core.BaseViewIntents
+import ru.kode.base.internship.products.domain.entity.Account
 
 class ProductsHomeIntents : BaseViewIntents() {
   val navigateOnBack = intent(name = "navigateOnBack")

@@ -11,7 +11,7 @@ android {
 dependencies {
 
   api project(":core:ui:uikit")
-  api project(":auth:domain")
+  api project(":products:domain")
   api project(':routing')
 
   implementation libs.compose.material3

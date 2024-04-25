@@ -9,7 +9,7 @@ data class Deposit(
   val title: String,
   val amount: String,
   val sign: CurrencySigns,
-  val terms: DepositTerms,
+  val idTerm: DepositTerms.Id,
 ) {
   @JvmInline
   value class Id(val value: String)
@@ -17,6 +17,10 @@ data class Deposit(
 
 @Immutable
 data class DepositTerms(
+  val id: Id = Id(randomUuid()),
   val rate: String,
   val date: String,
-)
+) {
+  @JvmInline
+  value class Id(val value: String)
+}

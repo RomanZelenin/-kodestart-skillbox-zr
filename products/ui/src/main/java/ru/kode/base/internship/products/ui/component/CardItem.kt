@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import ru.kode.base.internship.products.domain.entity.Card
+import ru.kode.base.internship.products.domain.entity.CardStatus
+import ru.kode.base.internship.products.domain.entity.CardType
 import ru.kode.base.internship.products.ui.R
-import ru.kode.base.internship.products.ui.home.Card
-import ru.kode.base.internship.products.ui.home.CardStatus
-import ru.kode.base.internship.products.ui.home.CardType
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable

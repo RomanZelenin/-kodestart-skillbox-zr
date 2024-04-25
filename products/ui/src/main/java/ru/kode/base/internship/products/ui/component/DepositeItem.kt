@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.kode.base.internship.products.ui.home.CurrencySigns
+import ru.kode.base.internship.products.domain.entity.CurrencySigns
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable

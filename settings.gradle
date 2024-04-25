@@ -17,4 +17,5 @@ include ':app',
   ':auth:data',
   ':auth:domain',
   ':products:ui',
-  ':products:domain'
+  ':products:domain',
+  ':products:data'

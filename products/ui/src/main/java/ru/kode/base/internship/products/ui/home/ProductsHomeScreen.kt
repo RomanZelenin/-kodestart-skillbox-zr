@@ -54,6 +54,7 @@ import ru.kode.base.internship.products.ui.component.CardItem
 import ru.kode.base.internship.products.ui.component.DepositItem
 import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -127,34 +128,46 @@ private fun LazyListScope.accounts(state: ProductsHomeViewState, intents: Produc
         }
 
         LceState.Content -> {
-          for ((account, cards) in state.loadedAccounts.entries) {
+          for (account in state.loadedAccounts) {
             val isExpanded = state.listExpandedAccounts.contains(account.id)
-            val currentDp = if (isExpanded) (75 * state.loadedAccounts[account]!!.size).dp else 0.dp
-            val animateDpExpanded = animateDpAsState(targetValue = currentDp, label = "")
             AccountItem(
               title = account.title,
               money = account.money,
-              isExpanded = isExpanded,
-              onClick = {
-                intents.expandAccount(account.id)
-              }
-            )
-            Column(modifier = Modifier.height(animateDpExpanded.value)) {
-              cards.forEachIndexed { index, card ->
-                CardItem(
-                  modifier = Modifier.clickable { },
-                  card = Card(
-                    title = card.title,
-                    status = card.status,
-                    icon = card.icon,
-                    type = card.type
-                  ),
-                )
-                if (index < state.loadedAccounts[account]!!.size - 1)
-                  HorizontalDivider(
-                    color = AppTheme.colors.contendSecondary,
-                    modifier = Modifier.offset(56.dp)
-                  )
+              isExpanded = isExpanded
+            ) {
+              intents.expandAccount(account.id)
+            }
+            state.listCards[account.id]?.let {
+              when (it.first) {
+                LceState.Content -> {
+                  val currentDp = if (isExpanded) (75 * account.attachedCards.size).dp else 0.dp
+                  val animateDpExpanded = animateDpAsState(targetValue = currentDp, label = "")
+                  Column(modifier = Modifier.height(animateDpExpanded.value)) {
+                    it.second.forEachIndexed { index, card ->
+                      CardItem(
+                        modifier = Modifier.clickable { },
+                        card = ru.kode.base.internship.products.domain.entity.Card(
+                          title = card.title,
+                          status = card.status,
+                          icon = card.icon,
+                          type = card.type
+                        )
+                      )
+                      if (index < account.attachedCards.size - 1)
+                        HorizontalDivider(
+                          color = AppTheme.colors.contendSecondary,
+                          modifier = Modifier.offset(56.dp)
+                        )
+                    }
+                  }
+                }
+
+                is LceState.Error -> {}
+                LceState.Loading -> {
+                  Timber.d("Loading ${account.id}")
+                }
+
+                LceState.None -> {}
               }
             }
           }
@@ -185,13 +198,14 @@ private fun LazyListScope.deposits(state: ProductsHomeViewState, intents: Produc
 
         LceState.Content -> {
           state.loadedDeposits.forEachIndexed { index, deposit ->
+            val term = state.terms.first { it.id == deposit.idTerm }
             DepositItem(
               modifier = Modifier.clickable { },
               title = deposit.title,
               amount = deposit.amount,
               sign = deposit.sign,
-              rate = deposit.rate,
-              date = deposit.date
+              rate = term.rate,
+              date = term.date
             )
             if (index < state.loadedDeposits.size - 1)
               HorizontalDivider(color = AppTheme.colors.contendSecondary, modifier = Modifier.offset(70.dp))
