@@ -145,7 +145,7 @@ private fun LazyListScope.accounts(state: ProductsHomeViewState, intents: Produc
                   Column(modifier = Modifier.height(animateDpExpanded.value)) {
                     it.second.forEachIndexed { index, card ->
                       CardItem(
-                        modifier = Modifier.clickable { },
+                        modifier = Modifier.clickable { intents.showCardDetails(card.id) },
                         card = ru.kode.base.internship.products.domain.entity.Card(
                           title = card.title,
                           status = card.status,

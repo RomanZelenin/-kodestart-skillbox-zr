@@ -14,4 +14,10 @@
   <string name="virtual">Виртуальная</string>
   <string name="blocked">Заблокирована</string>
   <string name="active">Активная</string>
+  <string name="cards">Карты</string>
+  <string name="rename_card">Переименовать карту</string>
+  <string name="account_details">Реквизиты счета</string>
+  <string name="card_info">Информация о карте</string>
+  <string name="issue_card">Выпустить карту</string>
+  <string name="block_card">Заблокировать карту</string>
 </resources>

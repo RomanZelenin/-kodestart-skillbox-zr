@@ -10,6 +10,7 @@ import ru.kode.base.core.routing.utils.ScreenTransitionAnimation
 import ru.kode.base.core.routing.utils.animatedComposable
 import ru.kode.base.core.viewmodel.ViewModelProviders
 import ru.kode.base.core.viewmodel.ViewModelStore
+import ru.kode.base.internship.products.ui.carddetails.CardDetailsScreen
 import ru.kode.base.internship.products.ui.home.ProductsHomeScreen
 import ru.kode.base.internship.routing.di.AppFlowScope
 import ru.kode.base.internship.ui.featureinprogress.FeatureInProgressScreen
@@ -37,6 +38,8 @@ object AppFlow : GraphFlow() {
         // TODO add navigation to next screen
         FlowEvent.UserLoggedIn -> navController.navigate(ScreenRoute.ProductsHome.route)
         FlowEvent.UserLoggedOut -> finish(Unit)
+        is FlowEvent.CardDetails -> navController.navigate("${ScreenRoute.CardDetails.route}/${event.id.value}")
+        FlowEvent.NavigateBack -> navController.popBackStack()
       }
     }
   }
@@ -56,9 +59,12 @@ object AppFlow : GraphFlow() {
     animatedComposable(ScreenRoute.ProductsHome.route, ScreenTransitionAnimation.Horizontal) {
       ProductsHomeScreen()
     }
- /*   animatedComposable(ScreenRoute.ServerNotFound.route, ScreenTransitionAnimation.Horizontal) {
-      ServerNotFound()
-    }*/
+    animatedComposable("${ScreenRoute.CardDetails.route}/{cardId}", ScreenTransitionAnimation.Horizontal) {
+      CardDetailsScreen(cardId = it.arguments!!.getString("cardId")!!)
+    }
+    /*   animatedComposable(ScreenRoute.ServerNotFound.route, ScreenTransitionAnimation.Horizontal) {
+         ServerNotFound()
+       }*/
   }
 
   private val ScreenRoute.route: String

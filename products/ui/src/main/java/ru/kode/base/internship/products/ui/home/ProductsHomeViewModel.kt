@@ -89,6 +89,12 @@ class ProductsHomeViewModel @Inject constructor(
       onEach(intent(ProductsHomeIntents::navigateOnBack)) {
         action { _, _, _ -> flowEvents.tryEmit(FlowEvent.UserLoggedOut) }
       }
+
+      onEach(intent(ProductsHomeIntents::showCardDetails)) {
+        action { _, _, cardId ->
+          flowEvents.tryEmit(FlowEvent.CardDetails(cardId))
+        }
+      }
     }
   }
 }
