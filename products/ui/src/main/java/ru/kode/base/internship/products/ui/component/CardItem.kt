@@ -60,7 +60,10 @@ private fun CardItemLightPreview() {
         title = "Карта зарплатная",
         status = CardStatus.ACTIVE,
         type = CardType.PHYSICAL,
-        icon = R.drawable.ic_master_card
+        icon = R.drawable.ic_master_card,
+        logo = R.drawable.master_card_logo,
+        number = "7721",
+        expiryDate = "08/30"
       )
     )
   }
@@ -75,7 +78,10 @@ private fun CardItemNightPreview() {
         title = "Карта зарплатная",
         status = CardStatus.ACTIVE,
         type = CardType.PHYSICAL,
-        icon = R.drawable.ic_master_card
+        icon = R.drawable.ic_master_card,
+        logo = R.drawable.master_card_logo,
+        number = "7721",
+        expiryDate = "08/30"
       )
     )
   }

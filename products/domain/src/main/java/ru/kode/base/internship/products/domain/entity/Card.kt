@@ -12,21 +12,24 @@ data class Card(
   val title: String,
   val status: CardStatus,
   val type: CardType,
+  val expiryDate: String,
+  val number: String,
   @DrawableRes val icon: Int,
+  @DrawableRes val logo: Int,
 ) {
   @JvmInline
   value class Id(val value: String)
 }
 
 enum class CardStatus(
-  @StringRes val id: Int
+  @StringRes val id: Int,
 ) {
   ACTIVE(R.string.active),
   BLOCKED(R.string.blocked),
 }
 
 enum class CardType(
-  @StringRes val id: Int
+  @StringRes val id: Int,
 ) {
   PHYSICAL(R.string.physical),
   VIRTUAL(R.string.virtual)
