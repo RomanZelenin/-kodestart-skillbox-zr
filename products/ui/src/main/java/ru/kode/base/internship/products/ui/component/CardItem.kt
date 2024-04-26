@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import ru.kode.base.internship.products.domain.entity.Card
+import ru.kode.base.internship.products.domain.entity.CardStatus
+import ru.kode.base.internship.products.domain.entity.CardType
 import ru.kode.base.internship.products.ui.R
-import ru.kode.base.internship.products.ui.home.Card
-import ru.kode.base.internship.products.ui.home.CardStatus
-import ru.kode.base.internship.products.ui.home.CardType
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
@@ -34,10 +34,18 @@ fun CardItem(modifier: Modifier = Modifier, card: Card) {
     },
     supportingContent = {
       Text(
-        text = if (card.status == CardStatus.ACTIVE)
-          stringResource(id = card.type.id)
-        else
-          stringResource(id = card.status.id),
+        text = when (card.status) {
+          CardStatus.ACTIVE -> {
+            when (card.type) {
+              CardType.PHYSICAL -> stringResource(id = R.string.physical)
+              CardType.VIRTUAL -> stringResource(id = R.string.virtual)
+            }
+          }
+
+          CardStatus.BLOCKED -> {
+            stringResource(id = R.string.blocked)
+          }
+        },
         style = AppTheme.typography.body2,
         color = if (card.status == CardStatus.BLOCKED)
           AppTheme.colors.indicatorContendError
@@ -60,7 +68,10 @@ private fun CardItemLightPreview() {
         title = "Карта зарплатная",
         status = CardStatus.ACTIVE,
         type = CardType.PHYSICAL,
-        icon = R.drawable.ic_master_card
+        icon = R.drawable.ic_master_card,
+        logo = R.drawable.master_card_logo,
+        number = "7721",
+        expiryDate = "08/30",
       )
     )
   }
@@ -75,7 +86,10 @@ private fun CardItemNightPreview() {
         title = "Карта зарплатная",
         status = CardStatus.ACTIVE,
         type = CardType.PHYSICAL,
-        icon = R.drawable.ic_master_card
+        icon = R.drawable.ic_master_card,
+        logo = R.drawable.master_card_logo,
+        number = "7721",
+        expiryDate = "08/30",
       )
     )
   }

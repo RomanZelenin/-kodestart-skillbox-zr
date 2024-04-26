@@ -2,17 +2,15 @@ plugins {
   id "android-library-convention"
   id "dagger-convention"
   id "android-compose-convention"
+  alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
-  namespace 'ru.kode.base.internship.routing'
+  namespace 'ru.kode.base.internship.products.data'
 }
 
 dependencies {
   implementation project(":core")
-  implementation project(':core:domain')
-  api project(":auth:data")
-  api project(":auth:domain")
-  api project(':products:data')
+  api project(":core:data")
   api project(':products:domain')
 }

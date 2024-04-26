@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.kode.base.internship.products.ui.home.CurrencySigns
+import ru.kode.base.internship.products.domain.entity.CurrencySign
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
@@ -28,7 +28,7 @@ fun DepositItem(
   modifier: Modifier = Modifier,
   title: String,
   amount: String,
-  sign: CurrencySigns,
+  sign: CurrencySign,
   rate: String,
   date: String
 ) {
@@ -82,7 +82,7 @@ private fun DepositItemLightPreview() {
     DepositItem(
       title = "Мой вклад",
       amount = "1 515 000,78",
-      sign = CurrencySigns.RUB,
+      sign = CurrencySign.RUB,
       rate = "7.65",
       date = "31.08.2024"
     )
@@ -96,7 +96,7 @@ private fun DepositItemNightPreview() {
     DepositItem(
       title = "Мой вклад",
       amount = "1 515 000,78",
-      sign = CurrencySigns.RUB,
+      sign = CurrencySign.RUB,
       rate = "7.65",
       date = "31.08.2024"
     )

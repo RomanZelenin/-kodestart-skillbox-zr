@@ -1,0 +1,13 @@
+plugins {
+  id "android-library-convention"
+  id "dagger-convention"
+  id "android-compose-convention"
+}
+
+android {
+  namespace 'ru.kode.base.internship.products.domain'
+}
+
+dependencies {
+  implementation project(":core:domain")
+}
