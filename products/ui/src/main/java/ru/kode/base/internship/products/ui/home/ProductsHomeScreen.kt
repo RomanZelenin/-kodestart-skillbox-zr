@@ -54,6 +54,7 @@ import ru.kode.base.internship.products.ui.component.CardItem
 import ru.kode.base.internship.products.ui.component.DepositItem
 import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -127,8 +128,8 @@ private fun LazyListScope.accounts(state: ProductsHomeViewState, intents: Produc
         }
 
         LceState.Content -> {
-          for (account in state.loadedAccounts) {
-            val isExpanded = state.listExpandedAccounts.contains(account.id)
+          for ((account, cards) in state.loadedAccounts) {
+            val isExpanded = state.expandedAccountIds.contains(account.id)
             val currentDp = if (isExpanded) (72.dp * account.attachedCards.size) else 0.dp
             val animateDpExpanded = animateDpAsState(targetValue = currentDp, label = "")
 
@@ -137,33 +138,27 @@ private fun LazyListScope.accounts(state: ProductsHomeViewState, intents: Produc
               money = account.money,
               isExpanded = isExpanded
             ) {
-              intents.expandAccount(account.id to account.attachedCards)
+              intents.expandAccount(account.id)
             }
-            state.listCards[account.id]?.let {
-              when (it.first) {
-                LceState.Content -> {
-                  Column(modifier = Modifier.height(animateDpExpanded.value)) {
-                    it.second.forEachIndexed { index, card ->
-                      CardItem(
-                        modifier = Modifier.clickable { },
-                        card = ru.kode.base.internship.products.domain.entity.Card(
-                          title = card.title,
-                          status = card.status,
-                          icon = card.icon,
-                          type = card.type
-                        )
-                      )
-                      if (index < account.attachedCards.size - 1)
-                        HorizontalDivider(
-                          color = AppTheme.colors.contendSecondary,
-                          modifier = Modifier.offset(56.dp)
-                        )
-                    }
-                  }
-                }
-                is LceState.Error -> {}
-                LceState.Loading -> {}
-                LceState.None -> {}
+            Column(modifier = Modifier.height(animateDpExpanded.value)) {
+              cards.forEachIndexed { index, card ->
+                CardItem(
+                  modifier = Modifier.clickable { },
+                  card = ru.kode.base.internship.products.domain.entity.Card(
+                    title = card.title,
+                    status = card.status,
+                    icon = card.icon,
+                    type = card.type,
+                    expiryDate = card.expiryDate,
+                    logo = card.logo,
+                    number = card.number
+                  )
+                )
+                if (index < account.attachedCards.size - 1)
+                  HorizontalDivider(
+                    color = AppTheme.colors.contendSecondary,
+                    modifier = Modifier.offset(56.dp)
+                  )
               }
             }
           }

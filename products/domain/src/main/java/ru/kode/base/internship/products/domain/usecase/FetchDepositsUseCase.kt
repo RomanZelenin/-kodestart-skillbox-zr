@@ -38,19 +38,15 @@ class FetchDepositsUseCase @Inject constructor(
 
   private suspend fun fetchDeposits() {
     setState { copy(depositState = LceState.Loading) }
-    delay(2000)
-    if (Random.nextBoolean()) {
+    try {
+      val deposits = depositRepository.getDeposits()
       val listTerms = mutableListOf<DepositTerms>()
-      depositRepository.deposits.collect { listDeposits ->
-        listDeposits.forEach { deposit ->
-          depositRepository.term(deposit.id).collect { term ->
-            listTerms.add(term)
-          }
-        }
-        setState { copy(depositState = LceState.Content, deposits = listDeposits, terms = listTerms) }
+      deposits.fold(listTerms) { acc, deposit ->
+        acc.apply { add(depositRepository.getTerm(deposit.id)) }
       }
-    } else {
-      setState { copy(depositState = LceState.Error("Error loading")) }
+      setState { copy(depositState = LceState.Content, deposits = deposits, terms = listTerms) }
+    } catch (e: Exception) {
+      setState { copy(depositState = LceState.Error(e.message)) }
     }
   }
 

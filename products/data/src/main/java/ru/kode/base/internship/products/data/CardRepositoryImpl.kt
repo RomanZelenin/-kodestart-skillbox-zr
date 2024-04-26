@@ -14,11 +14,10 @@ import javax.inject.Inject
 @ContributesBinding(AppScope::class)
 class CardRepositoryImpl @Inject constructor() : CardRepository {
   override fun cardDetails(id: Card.Id): Flow<Card> {
-    return flow {
-      listMockCards.find { it.id == id }?.let {
-        emit(it)
-      }
-    }
+    return flow { emit(getCardDetails(id)) } }
+
+  override suspend fun getCardDetails(id: Card.Id): Card {
+    return listMockCards.first { it.id == id }
   }
 
 
@@ -28,21 +27,30 @@ class CardRepositoryImpl @Inject constructor() : CardRepository {
       title = "Карта зарплатная",
       type = CardType.PHYSICAL,
       status = CardStatus.ACTIVE,
-      icon = R.drawable.ic_master_card
+      icon = R.drawable.ic_master_card,
+      logo = R.drawable.master_card_logo,
+      number = "1234",
+      expiryDate = "01/28"
     ),
     Card(
       id = Card.Id("2"),
       title = "Дополнительная карта",
       type = CardType.VIRTUAL,
       status = CardStatus.BLOCKED,
-      icon = R.drawable.ic_visa_card
+      icon = R.drawable.ic_visa_card,
+      logo = R.drawable.visa_card_logo,
+      number = "2341",
+      expiryDate = "02/25"
     ),
     Card(
       id = Card.Id("3"),
       title = "Дополнительная карта",
       status = CardStatus.ACTIVE,
       type = CardType.VIRTUAL,
-      icon = R.drawable.ic_visa_card
+      icon = R.drawable.ic_visa_card,
+      logo = R.drawable.visa_card_logo,
+      number = "7721",
+      expiryDate = "08/30"
     ),
   )
 }
