@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.dimsuz.unicorn2.Machine
 import ru.dimsuz.unicorn2.machine
 import ru.kode.base.core.BaseViewModel
+import ru.kode.base.internship.products.domain.usecase.GetAccountByIdUseCase
 import ru.kode.base.internship.products.domain.usecase.GetCardByIdUseCase
 import ru.kode.base.internship.routing.FlowEvent
 import javax.inject.Inject
@@ -11,6 +12,7 @@ import javax.inject.Inject
 class CardDetailsViewModel @Inject constructor(
   private val flowEvents: MutableSharedFlow<FlowEvent>,
   private val getCardByIdUseCase: GetCardByIdUseCase,
+  private val getAccountByIdUseCase: GetAccountByIdUseCase,
 ) : BaseViewModel<CardDetailsViewState, CardDetailsIntents>() {
   override fun buildMachine(): Machine<CardDetailsViewState> {
     return machine {
@@ -21,13 +23,49 @@ class CardDetailsViewModel @Inject constructor(
       }
 
       onEach(intent(CardDetailsIntents::loadCardInfo)) {
-        action { _, _, cardId ->
-            getCardByIdUseCase(cardId)
+        action { _, _, cardId -> getCardByIdUseCase(cardId) }
+      }
+
+      onEach(getCardByIdUseCase.card) {
+        transitionTo { state, card -> state.copy(currentCard = card) }
+      }
+
+      onEach(intent(CardDetailsIntents::loadAccount)) {
+        action { _, _, accountId -> getAccountByIdUseCase(accountId) }
+      }
+
+      onEach(getAccountByIdUseCase.account) {
+        transitionTo { state, account -> state.copy(account = account) }
+      }
+
+      onEach(intent(CardDetailsIntents::showRenameCardDialog)) {
+        transitionTo { state, isShow ->
+          state.copy(isShowRenameCardDialog = isShow)
         }
       }
 
-      onEach(getCardByIdUseCase.card){
+      onEach(intent(CardDetailsIntents::saveCardName)) {
+        transitionTo { state, name ->
+          if (name.isBlank()) {
+            state.copy(
+              errorMessage = "Не удалось переименовать карту. Поле не может быть пустым",
+              isShowRenameCardDialog = false
+            )
+          } else {
+            state.copy(
+              successMessage = "Карта успешно переименована",
+              isShowRenameCardDialog = false,
+              errorMessage = null,
+              currentCard = state.currentCard!!.copy(title = name)
+            )
+          }
+        }
+      }
 
+      onEach(intent(CardDetailsIntents::dismissError)) {
+        transitionTo { state, _ ->
+          state.copy(errorMessage = null)
+        }
       }
     }
   }

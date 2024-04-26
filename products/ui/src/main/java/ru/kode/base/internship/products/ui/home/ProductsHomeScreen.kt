@@ -145,12 +145,15 @@ private fun LazyListScope.accounts(state: ProductsHomeViewState, intents: Produc
                   Column(modifier = Modifier.height(animateDpExpanded.value)) {
                     it.second.forEachIndexed { index, card ->
                       CardItem(
-                        modifier = Modifier.clickable { intents.showCardDetails(card.id) },
+                        modifier = Modifier.clickable { intents.showCardDetails(account.id to card.id) },
                         card = ru.kode.base.internship.products.domain.entity.Card(
                           title = card.title,
                           status = card.status,
                           icon = card.icon,
-                          type = card.type
+                          type = card.type,
+                          logo = card.logo,
+                          number = card.number,
+                          expiryDate = card.expiryDate
                         )
                       )
                       if (index < account.attachedCards.size - 1)

@@ -5,9 +5,9 @@ import ru.dimsuz.unicorn2.Machine
 import ru.dimsuz.unicorn2.machine
 import ru.kode.base.core.BaseViewModel
 import ru.kode.base.internship.products.domain.usecase.FetchAccountsUseCase
-import ru.kode.base.internship.products.domain.usecase.LoadingCardsByIdAccountUseCase
 import ru.kode.base.internship.products.domain.usecase.FetchDepositsUseCase
 import ru.kode.base.internship.products.domain.usecase.FetchProductsUseCase
+import ru.kode.base.internship.products.domain.usecase.LoadingCardsByIdAccountUseCase
 import ru.kode.base.internship.routing.FlowEvent
 import javax.inject.Inject
 
@@ -33,7 +33,6 @@ class ProductsHomeViewModel @Inject constructor(
       onEach(fetchProductsUseCase.isRefreshing) {
         transitionTo { state, isRefreshing -> state.copy(isRefreshing = isRefreshing) }
       }
-
 
       onEach(fetchAccountsUseCase.accountState) {
         transitionTo { state, lceState -> state.copy(accountsLceState = lceState) }
@@ -63,9 +62,8 @@ class ProductsHomeViewModel @Inject constructor(
       }
 
       onEach(loadingCardsByIdAccountUseCase.cards) {
-        transitionTo { state, payload -> state.copy(listCards = payload) }
+        transitionTo { state, cards -> state.copy(listCards = cards) }
       }
-
 
       onEach(fetchDepositsUseCase.depositState) {
         transitionTo { state, lceState -> state.copy(depositsLceState = lceState) }
@@ -88,8 +86,8 @@ class ProductsHomeViewModel @Inject constructor(
       }
 
       onEach(intent(ProductsHomeIntents::showCardDetails)) {
-        action { _, _, cardId ->
-          flowEvents.tryEmit(FlowEvent.CardDetails(cardId))
+        action { _, _, pair ->
+          flowEvents.tryEmit(FlowEvent.CardDetails(accountId = pair.first, cardId = pair.second))
         }
       }
     }

@@ -10,14 +10,13 @@ import ru.kode.base.internship.products.domain.entity.Card
 import ru.kode.base.internship.products.domain.entity.CurrencySigns
 import ru.kode.base.internship.products.domain.entity.Money
 import javax.inject.Inject
-import kotlin.random.Random
 
 @ContributesBinding(AppScope::class)
 class AccountsRepositoryImpl @Inject constructor() : AccountsRepository {
   override val accounts: Flow<List<Account>>
     get() {
     return  flow {
-        emit(mockAccounts.shuffled().subList(0,Random.nextInt(1,mockAccounts.size)))
+        emit(mockAccounts.shuffled()/*.subList(0,Random.nextInt(1,mockAccounts.size))*/)
       }
     }
 
@@ -31,13 +30,13 @@ class AccountsRepositoryImpl @Inject constructor() : AccountsRepository {
     Account(
       id = Account.Id("2"),
       title = "Счет расчетный2",
-      money = Money(amount = "457 100,00", sign = CurrencySigns.EUR),
+      money = Money(amount = "100,00", sign = CurrencySigns.EUR),
       attachedCards = listOf(Card.Id("2"), Card.Id("3"))
     ),
     Account(
       id = Account.Id("3"),
       title = "Счет расчетный3",
-      money = Money(amount = "457 100,00", sign = CurrencySigns.USD),
+      money = Money(amount = "400,00", sign = CurrencySigns.USD),
       attachedCards = listOf(Card.Id("1"))
     )
   )

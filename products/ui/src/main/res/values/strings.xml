@@ -20,4 +20,8 @@
   <string name="card_info">Информация о карте</string>
   <string name="issue_card">Выпустить карту</string>
   <string name="block_card">Заблокировать карту</string>
+  <string name="rename">Переименовать</string>
+  <string name="input_new_name">Введите новое название</string>
+  <string name="save">Сохранить</string>
+  <string name="cancel">Отмена</string>
 </resources>
