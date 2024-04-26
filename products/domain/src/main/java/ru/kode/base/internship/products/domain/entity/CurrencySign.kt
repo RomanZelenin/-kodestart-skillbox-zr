@@ -1,6 +1,6 @@
 package ru.kode.base.internship.products.domain.entity
 
-enum class CurrencySigns(val code: String) {
+enum class CurrencySign(val code: String) {
   RUB("₽"),
   EUR("€"),
   USD("\$")

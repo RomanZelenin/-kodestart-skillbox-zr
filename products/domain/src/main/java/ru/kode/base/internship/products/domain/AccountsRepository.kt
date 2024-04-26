@@ -5,4 +5,6 @@ import ru.kode.base.internship.products.domain.entity.Account
 
 interface AccountsRepository {
   val accounts: Flow<List<Account>>
+
+  suspend fun getAccounts():List<Account>
 }

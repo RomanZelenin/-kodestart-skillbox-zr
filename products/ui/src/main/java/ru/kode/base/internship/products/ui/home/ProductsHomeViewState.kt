@@ -11,12 +11,11 @@ import ru.kode.base.internship.products.domain.entity.DepositTerms
 data class ProductsHomeViewState(
   val accountsLceState: LceState = LceState.Loading,
   val depositsLceState: LceState = LceState.Loading,
-  val loadedAccounts: List<Account> = emptyList(),
+  val loadedAccounts: Map<Account,List<Card>> = emptyMap(),
   val loadedDeposits: List<Deposit> = emptyList(),
   val terms: List<DepositTerms> = emptyList(),
   val errorMessage: String? = null,
   val isRefreshing: Boolean = false,
-  val listExpandedAccounts: List<Account.Id> = emptyList(),
-  val listCards: Map<Account.Id, Pair<LceState, List<Card>>> = emptyMap(),
+  val expandedAccountIds: List<Account.Id> = emptyList(),
 )
 

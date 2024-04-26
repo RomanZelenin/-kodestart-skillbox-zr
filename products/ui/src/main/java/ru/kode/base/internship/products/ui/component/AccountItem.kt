@@ -24,7 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.kode.base.internship.products.domain.entity.CurrencySigns
+import format
+import ru.kode.base.internship.products.domain.entity.CurrencySign
 import ru.kode.base.internship.products.domain.entity.Money
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
@@ -96,7 +97,7 @@ private fun AccountItemLightPreview() {
   AppTheme {
     AccountItem(
       title = stringResource(id = R.string.current_account),
-      money = Money(amount = "457 334,00", sign = CurrencySigns.RUB)
+      money = Money(amount = "457 334,00", sign = CurrencySign.RUB)
     ) {}
   }
 }
@@ -107,7 +108,7 @@ private fun AccountItemNightPreview() {
   AppTheme {
     AccountItem(
       title = stringResource(id = R.string.current_account),
-      money = Money(amount = "457 334,00", sign = CurrencySigns.RUB)
+      money = Money(amount = "457 334,00", sign = CurrencySign.RUB)
     ) {}
   }
 }

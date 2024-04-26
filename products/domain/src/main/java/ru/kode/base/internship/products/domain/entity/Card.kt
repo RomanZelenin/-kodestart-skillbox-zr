@@ -21,16 +21,12 @@ data class Card(
   value class Id(val value: String)
 }
 
-enum class CardStatus(
-  @StringRes val id: Int,
-) {
-  ACTIVE(R.string.active),
-  BLOCKED(R.string.blocked),
+enum class CardStatus {
+  ACTIVE,
+  BLOCKED,
 }
 
-enum class CardType(
-  @StringRes val id: Int,
-) {
-  PHYSICAL(R.string.physical),
-  VIRTUAL(R.string.virtual)
+enum class CardType {
+  PHYSICAL,
+  VIRTUAL
 }

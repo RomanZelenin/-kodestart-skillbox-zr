@@ -8,7 +8,7 @@ data class Deposit(
   val id: Id = Id(randomUuid()),
   val title: String,
   val amount: String,
-  val sign: CurrencySigns,
+  val sign: CurrencySign,
   val idTerm: DepositTerms.Id,
 ) {
   @JvmInline

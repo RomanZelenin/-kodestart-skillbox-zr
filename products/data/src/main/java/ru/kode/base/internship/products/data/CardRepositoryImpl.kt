@@ -14,11 +14,10 @@ import javax.inject.Inject
 @ContributesBinding(AppScope::class)
 class CardRepositoryImpl @Inject constructor() : CardRepository {
   override fun cardDetails(id: Card.Id): Flow<Card> {
-    return flow {
-      listMockCards.find { it.id == id }?.let {
-        emit(it)
-      }
-    }
+    return flow { emit(getCardDetails(id)) } }
+
+  override suspend fun getCardDetails(id: Card.Id): Card {
+    return listMockCards.first { it.id == id }
   }
 
 
