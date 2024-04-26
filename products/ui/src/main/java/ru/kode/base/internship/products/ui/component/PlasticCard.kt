@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,6 +35,7 @@ import ru.kode.base.internship.ui.core.uikit.theme.Red2
 
 @Composable
 fun PlasticCard(
+  modifier: Modifier = Modifier,
   @DrawableRes logo: Int,
   title: String,
   cardType: CardType,
@@ -43,14 +44,16 @@ fun PlasticCard(
   status: CardStatus,
   date: String,
 ) {
-  Card(
-    modifier = Modifier
+  Surface(
+    modifier = modifier
       .height(160.dp)
       .width(272.dp),
     shape = RoundedCornerShape(8.dp),
-    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-  ) {
-    Box(modifier = Modifier) {
+    tonalElevation = 8.dp,
+    color = Color.Transparent
+  )
+  {
+    Box {
       Image(
         painter = painterResource(id = R.drawable.visa_card_bg),
         contentDescription = "Card Background",
@@ -131,7 +134,7 @@ private fun CreditCardPreview() {
       logo = R.drawable.master_card_logo,
       title = "Дополнительная карта",
       cardType = CardType.VIRTUAL,
-      Money("7 333, 00", CurrencySigns.RUB),
+      money = Money("7 333, 00", CurrencySigns.RUB),
       number = "7789",
       date = "05/22",
       status = CardStatus.ACTIVE

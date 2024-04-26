@@ -10,5 +10,5 @@ class CardDetailsIntents : BaseViewIntents() {
   val loadAccount = intent<Account.Id>(name = "loadAccount")
   val showRenameCardDialog = intent<Boolean>(name = "renameCardDialog")
   val saveCardName = intent<String>(name = "saveCardName")
-  val dismissError = intent(name = "dismissError")
+  val dismissSnackbar = intent(name = "dismissSnackbar")
 }

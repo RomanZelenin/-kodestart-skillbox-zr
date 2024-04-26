@@ -6,6 +6,7 @@ import ru.dimsuz.unicorn2.machine
 import ru.kode.base.core.BaseViewModel
 import ru.kode.base.internship.products.domain.usecase.GetAccountByIdUseCase
 import ru.kode.base.internship.products.domain.usecase.GetCardByIdUseCase
+import ru.kode.base.internship.products.ui.carddetails.entity.CardDetailsErrorMessage
 import ru.kode.base.internship.routing.FlowEvent
 import javax.inject.Inject
 
@@ -48,24 +49,23 @@ class CardDetailsViewModel @Inject constructor(
         transitionTo { state, name ->
           if (name.isBlank()) {
             state.copy(
-              errorMessage = "Не удалось переименовать карту. Поле не может быть пустым",
-              isShowRenameCardDialog = false
+              errorMessage = CardDetailsErrorMessage.ValidationError.EmptyCardName,
+              isShowRenameCardDialog = false,
+              isShowSnackbar = true
             )
           } else {
             state.copy(
-              successMessage = "Карта успешно переименована",
               isShowRenameCardDialog = false,
               errorMessage = null,
-              currentCard = state.currentCard!!.copy(title = name)
+              currentCard = state.currentCard!!.copy(title = name),
+              isShowSnackbar = true
             )
           }
         }
       }
 
-      onEach(intent(CardDetailsIntents::dismissError)) {
-        transitionTo { state, _ ->
-          state.copy(errorMessage = null)
-        }
+      onEach(intent(CardDetailsIntents::dismissSnackbar)) {
+        transitionTo { state, _ -> state.copy(isShowSnackbar = false) }
       }
     }
   }

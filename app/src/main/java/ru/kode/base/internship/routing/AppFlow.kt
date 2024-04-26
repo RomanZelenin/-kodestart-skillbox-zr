@@ -30,6 +30,7 @@ object AppFlow : GraphFlow() {
   ) : BaseFlowCoordinator<FlowEvent, Unit>(providers, flowEvents, viewModelStore) {
     override suspend fun onFlowStart() {
       navController.navigate(ScreenRoute.UserIdentification.route)
+      //navController.navigate(ScreenRoute.ProductsHome.route)
     }
 
     override suspend fun handleEvent(event: FlowEvent) {
