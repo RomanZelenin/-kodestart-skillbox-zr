@@ -1,56 +1,38 @@
 package ru.kode.base.internship.products.data
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.squareup.anvil.annotations.ContributesBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import ru.kode.base.core.di.AppScope
+import ru.kode.base.core.di.SingleIn
+import ru.kode.base.internship.products.data.network.ParamCardName
+import ru.kode.base.internship.products.data.network.ProductsApi
+import ru.kode.base.internship.products.data.storage.ProductsDatabase
 import ru.kode.base.internship.products.domain.CardRepository
 import ru.kode.base.internship.products.domain.entity.Card
-import ru.kode.base.internship.products.domain.entity.CardStatus
-import ru.kode.base.internship.products.domain.entity.CardType
 import javax.inject.Inject
 
-
+@SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
-class CardRepositoryImpl @Inject constructor() : CardRepository {
-  override fun cardDetails(id: Card.Id): Flow<Card> {
-    return flow { emit(getCardDetails(id)) } }
+class CardRepositoryImpl @Inject constructor(
+  private val productsApi: ProductsApi,
+  private val productsDatabase: ProductsDatabase,
+) : CardRepository {
 
-  override suspend fun getCardDetails(id: Card.Id): Card {
-    return listMockCards.first { it.id == id }
+  override val cards: Flow<List<Card>>
+    get() = productsDatabase.cardQueries.selectAll()
+      .asFlow()
+      .mapToList(Dispatchers.IO)
+      .map { it.map { it.toDomainModel() } }
+
+
+  override suspend fun editCardName(id: Card.Id, name: String) {
+    productsApi.setCardName(id = id.value, param = ParamCardName(name))
+    productsDatabase.cardQueries.changeCardName(name, id.value.toLong())
   }
 
 
-  private val listMockCards = listOf(
-    Card(
-      id = Card.Id("1"),
-      title = "Карта зарплатная",
-      type = CardType.PHYSICAL,
-      status = CardStatus.ACTIVE,
-      icon = R.drawable.ic_master_card,
-      logo = R.drawable.master_card_logo,
-      number = "1234",
-      expiryDate = "01/28"
-    ),
-    Card(
-      id = Card.Id("2"),
-      title = "Дополнительная карта",
-      type = CardType.VIRTUAL,
-      status = CardStatus.BLOCKED,
-      icon = R.drawable.ic_visa_card,
-      logo = R.drawable.visa_card_logo,
-      number = "2341",
-      expiryDate = "02/25"
-    ),
-    Card(
-      id = Card.Id("3"),
-      title = "Дополнительная карта",
-      status = CardStatus.ACTIVE,
-      type = CardType.VIRTUAL,
-      icon = R.drawable.ic_visa_card,
-      logo = R.drawable.visa_card_logo,
-      number = "7721",
-      expiryDate = "08/30"
-    ),
-  )
 }

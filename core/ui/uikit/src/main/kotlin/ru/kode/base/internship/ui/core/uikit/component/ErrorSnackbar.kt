@@ -19,7 +19,7 @@ import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 fun ErrorSnackbar(
   modifier: Modifier = Modifier,
   message: String,
-  onClose:()->Unit,
+  onClose: () -> Unit,
 ) {
   Snackbar(
     modifier = modifier,

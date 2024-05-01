@@ -1,7 +1,6 @@
 package ru.kode.base.internship.products.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import ru.kode.base.core.di.AppScope
@@ -10,9 +9,7 @@ import ru.kode.base.internship.core.domain.BaseUseCase
 import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.domain.DepositRepository
 import ru.kode.base.internship.products.domain.entity.Deposit
-import ru.kode.base.internship.products.domain.entity.DepositTerms
 import javax.inject.Inject
-import kotlin.coroutines.suspendCoroutine
 
 @SingleIn(AppScope::class)
 class FetchDepositsUseCase @Inject constructor(

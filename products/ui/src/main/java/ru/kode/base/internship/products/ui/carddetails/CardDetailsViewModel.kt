@@ -75,13 +75,13 @@ class CardDetailsViewModel @Inject constructor(
       }
 
       onEach(renameCardUseCase.cardState) {
-        transitionTo { state, payload ->
-          if (payload !is LceState.None){
+        transitionTo { state, cardState ->
+          if (cardState !is LceState.None) {
             state.copy(
-              errorMessage = if (payload is LceState.Error) CardDetailsErrorMessage.ValidationError.EmptyCardName else null,
+              errorMessage = if (cardState is LceState.Error) CardDetailsErrorMessage.ValidationError.EmptyCardName else null,
               isShowNotification = true
             )
-          }else{
+          } else {
             state
           }
         }

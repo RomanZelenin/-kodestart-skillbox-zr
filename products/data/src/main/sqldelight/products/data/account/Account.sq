@@ -1,0 +1,17 @@
+CREATE TABLE Account (
+    id INTEGER NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    money TEXT NOT NULL,
+    country_currency TEXT NOT NULL,
+    status TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM Account;
+
+insertAccountObject:
+INSERT OR REPLACE  INTO Account(id, title, money, country_currency, status) VALUES ?;
+
+deleteAll:
+DELETE FROM Account;
+
