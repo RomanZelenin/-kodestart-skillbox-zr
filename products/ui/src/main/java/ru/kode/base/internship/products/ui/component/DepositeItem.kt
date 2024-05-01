@@ -20,17 +20,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import format
 import ru.kode.base.internship.products.domain.entity.CurrencySign
+import ru.kode.base.internship.products.domain.entity.Money
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
 fun DepositItem(
   modifier: Modifier = Modifier,
   title: String,
-  amount: String,
-  sign: CurrencySign,
+  money: Money,
   rate: String,
-  date: String
+  date: String,
 ) {
   ListItem(
     modifier = modifier,
@@ -44,7 +45,7 @@ fun DepositItem(
         contentAlignment = Alignment.Center
       ) {
         Text(
-          text = sign.code,
+          text = money.sign.code,
           color = AppTheme.colors.textPrimary,
           fontSize = 26.sp,
           fontWeight = FontWeight.Light
@@ -60,7 +61,7 @@ fun DepositItem(
     },
     supportingContent = {
       Text(
-        text = "$amount ${sign.code}",
+        text = money.format(),
         style = AppTheme.typography.body2,
         color = AppTheme.colors.contendAccentPrimary
       )
@@ -81,8 +82,10 @@ private fun DepositItemLightPreview() {
   AppTheme {
     DepositItem(
       title = "Мой вклад",
-      amount = "1 515 000,78",
-      sign = CurrencySign.RUB,
+      money = Money(
+        amount = "1515000,78",
+        sign = CurrencySign.RUB,
+      ),
       rate = "7.65",
       date = "31.08.2024"
     )
@@ -95,8 +98,10 @@ private fun DepositItemNightPreview() {
   AppTheme {
     DepositItem(
       title = "Мой вклад",
-      amount = "1 515 000,78",
-      sign = CurrencySign.RUB,
+      money = Money(
+        amount = "1515000,78",
+        sign = CurrencySign.RUB,
+      ),
       rate = "7.65",
       date = "31.08.2024"
     )

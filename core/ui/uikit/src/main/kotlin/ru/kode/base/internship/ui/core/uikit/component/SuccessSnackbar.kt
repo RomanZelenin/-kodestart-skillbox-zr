@@ -16,20 +16,20 @@ import androidx.compose.ui.unit.dp
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
-fun ErrorSnackbar(
+fun SuccessSnackbar(
   modifier: Modifier = Modifier,
   message: String,
-  onClose:()->Unit,
+  onClose: () -> Unit,
 ) {
   Snackbar(
-    modifier = modifier,
     action = {
       IconButton(onClick = onClose) {
         Icon(imageVector = Icons.Default.Close, contentDescription = null, tint = AppTheme.colors.textButton)
       }
     },
+    modifier = modifier,
     shape = RoundedCornerShape(13.dp),
-    backgroundColor = AppTheme.colors.indicatorContendError,
+    backgroundColor = AppTheme.colors.indicatorContendSuccess,
   ) {
     Text(
       modifier = Modifier.padding(vertical = 10.dp),
@@ -42,15 +42,15 @@ fun ErrorSnackbar(
 
 @Preview(showBackground = true, widthDp = 360)
 @Composable
-internal fun ErrorSnackbarPreview() {
+internal fun SuccessSnackbarPreview() {
   AppTheme {
     Column {
-      ErrorSnackbar(
+      SuccessSnackbar(
         modifier = Modifier.padding(16.dp),
         message = "Message",
         onClose = {}
       )
-      ErrorSnackbar(
+      SuccessSnackbar(
         modifier = Modifier.padding(16.dp),
         message = "Long Message Long Message Long Message  Long Message",
         onClose = {}

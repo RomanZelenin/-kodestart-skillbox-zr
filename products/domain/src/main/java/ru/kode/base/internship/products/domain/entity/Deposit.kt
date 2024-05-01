@@ -7,9 +7,8 @@ import ru.kode.base.core.util.randomUuid
 data class Deposit(
   val id: Id = Id(randomUuid()),
   val title: String,
-  val amount: String,
-  val sign: CurrencySign,
-  val idTerm: DepositTerms.Id,
+  val money: Money,
+  val term: DepositTerms,
 ) {
   @JvmInline
   value class Id(val value: String)

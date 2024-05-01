@@ -130,7 +130,7 @@ private fun Snackbar(
     modifier = modifier,
     hostState = snackbarHostState,
     snackbar = { snackBarData ->
-      ErrorSnackbar(modifier = Modifier.padding(16.dp), message = snackBarData.message)
+      ErrorSnackbar(modifier = Modifier.padding(16.dp), message = snackBarData.message, onClose = onDismiss)
     }
   )
 }

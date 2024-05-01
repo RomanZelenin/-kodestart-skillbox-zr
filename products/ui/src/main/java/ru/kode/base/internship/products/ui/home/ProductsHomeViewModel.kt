@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import ru.dimsuz.unicorn2.Machine
 import ru.dimsuz.unicorn2.machine
 import ru.kode.base.core.BaseViewModel
+import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.domain.usecase.FetchAccountsUseCase
 import ru.kode.base.internship.products.domain.usecase.FetchDepositsUseCase
 import ru.kode.base.internship.routing.FlowEvent
@@ -34,7 +35,6 @@ class ProductsHomeViewModel @Inject constructor(
             launch { fetchDepositsUseCase() }
           }
         }
-         transitionTo { state, _ -> state.copy(isRefreshing = false) }
       }
 
       onEach(fetchAccountsUseCase.accountState) {
@@ -42,13 +42,14 @@ class ProductsHomeViewModel @Inject constructor(
           state.copy(
             accountsLceState = lceState,
             expandedAccountIds = emptyList(),
+            isRefreshing = (lceState is LceState.Loading) || (state.depositsLceState is LceState.Loading)
           )
         }
       }
 
       onEach(fetchAccountsUseCase.accounts) {
         transitionTo { state, accountList ->
-          state.copy(loadedAccounts = accountList)
+          state.copy(accounts = accountList)
         }
       }
 
@@ -69,25 +70,28 @@ class ProductsHomeViewModel @Inject constructor(
       onEach(fetchDepositsUseCase.depositState) {
         transitionTo { state, lceState ->
           state.copy(
-            depositsLceState = lceState
+            depositsLceState = lceState,
+            isRefreshing = (lceState is LceState.Loading) || (state.accountsLceState is LceState.Loading)
           )
         }
       }
 
       onEach(fetchDepositsUseCase.deposits) {
-        transitionTo { state, depositList -> state.copy(loadedDeposits = depositList) }
+        transitionTo { state, depositList -> state.copy(deposits = depositList) }
       }
 
       onEach(intent(ProductsHomeIntents::loadDeposits)) {
         action { _, _, _ -> executeAsync { fetchDepositsUseCase() } }
       }
 
-      onEach(fetchDepositsUseCase.terms) {
-        transitionTo { state, terms -> state.copy(terms = terms) }
-      }
-
       onEach(intent(ProductsHomeIntents::navigateOnBack)) {
         action { _, _, _ -> flowEvents.tryEmit(FlowEvent.UserLoggedOut) }
+      }
+
+      onEach(intent(ProductsHomeIntents::showCardDetails)) {
+        action { _, _, ids ->
+          flowEvents.tryEmit(FlowEvent.CardDetails(accountId = ids.accountId, cardId = ids.cardId))
+        }
       }
     }
   }

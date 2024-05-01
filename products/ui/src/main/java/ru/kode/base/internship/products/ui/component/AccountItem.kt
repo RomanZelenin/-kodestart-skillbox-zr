@@ -97,7 +97,7 @@ private fun AccountItemLightPreview() {
   AppTheme {
     AccountItem(
       title = stringResource(id = R.string.current_account),
-      money = Money(amount = "457 334,00", sign = CurrencySign.RUB)
+      money = Money(amount = "457334", sign = CurrencySign.RUB)
     ) {}
   }
 }
@@ -108,7 +108,7 @@ private fun AccountItemNightPreview() {
   AppTheme {
     AccountItem(
       title = stringResource(id = R.string.current_account),
-      money = Money(amount = "457 334,00", sign = CurrencySign.RUB)
+      money = Money(amount = "457334", sign = CurrencySign.RUB)
     ) {}
   }
 }

@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -28,7 +31,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MediumTopAppBar
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -54,7 +56,6 @@ import ru.kode.base.internship.products.ui.component.CardItem
 import ru.kode.base.internship.products.ui.component.DepositItem
 import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -68,8 +69,17 @@ fun ProductsHomeScreen(viewModel: ProductsHomeViewModel = daggerViewModel()) =
       refreshing = state.isRefreshing,
       onRefresh = { intents.refresh() }
     )
-    Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
-      Scaffold(containerColor = AppTheme.colors.backgroundPrimary, topBar = {
+    Box(
+      modifier = Modifier
+        .statusBarsPadding()
+        .navigationBarsPadding()
+        .imePadding(),
+    ) {
+      Column(
+        modifier = Modifier
+          .pullRefresh(pullRefreshState)
+          .background(color = AppTheme.colors.backgroundPrimary)
+      ) {
         MediumTopAppBar(
           colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = AppTheme.colors.backgroundPrimary,
@@ -84,12 +94,10 @@ fun ProductsHomeScreen(viewModel: ProductsHomeViewModel = daggerViewModel()) =
           },
           scrollBehavior = appBarBehaviour
         )
-      }) {
         val shimmerInstance = rememberShimmer(shimmerBounds = ShimmerBounds.View)
         LazyColumn(
           modifier = Modifier
             .fillMaxSize()
-            .padding(it)
             .nestedScroll(appBarBehaviour.nestedScrollConnection)
         ) {
           accounts(state = state, intents = intents, shimmer = shimmerInstance)
@@ -128,7 +136,7 @@ private fun LazyListScope.accounts(state: ProductsHomeViewState, intents: Produc
         }
 
         LceState.Content -> {
-          for ((account, cards) in state.loadedAccounts) {
+          for (account in state.accounts) {
             val isExpanded = state.expandedAccountIds.contains(account.id)
             val currentDp = if (isExpanded) (72.dp * account.attachedCards.size) else 0.dp
             val animateDpExpanded = animateDpAsState(targetValue = currentDp, label = "")
@@ -141,15 +149,15 @@ private fun LazyListScope.accounts(state: ProductsHomeViewState, intents: Produc
               intents.expandAccount(account.id)
             }
             Column(modifier = Modifier.height(animateDpExpanded.value)) {
-              cards.forEachIndexed { index, card ->
+              account.attachedCards.forEachIndexed { index, card ->
                 CardItem(
-                  modifier = Modifier.clickable { },
+                  modifier = Modifier.clickable { intents.showCardDetails(AccountIdWithCardId(accountId = account.id, card.id)) },
                   card = ru.kode.base.internship.products.domain.entity.Card(
                     title = card.title,
                     status = card.status,
                     icon = card.icon,
                     type = card.type,
-                    expiryDate = card.expiryDate,
+                    expiredAt = card.expiredAt,
                     logo = card.logo,
                     number = card.number
                   )
@@ -188,17 +196,15 @@ private fun LazyListScope.deposits(state: ProductsHomeViewState, intents: Produc
         }
 
         LceState.Content -> {
-          state.loadedDeposits.forEachIndexed { index, deposit ->
-            val term = state.terms.first { it.id == deposit.idTerm }
+          state.deposits.forEachIndexed { index, deposit ->
             DepositItem(
               modifier = Modifier.clickable { },
               title = deposit.title,
-              amount = deposit.amount,
-              sign = deposit.sign,
-              rate = term.rate,
-              date = term.date
+              money = deposit.money,
+              rate = deposit.term.rate,
+              date = deposit.term.date
             )
-            if (index < state.loadedDeposits.size - 1)
+            if (index < state.deposits.size - 1)
               HorizontalDivider(color = AppTheme.colors.contendSecondary, modifier = Modifier.offset(70.dp))
           }
         }

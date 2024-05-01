@@ -14,4 +14,21 @@
   <string name="virtual">Виртуальная</string>
   <string name="blocked">Заблокирована</string>
   <string name="active">Активная</string>
+  <string name="cards">Карты</string>
+  <string name="rename_card">Переименовать карту</string>
+  <string name="account_details">Реквизиты счета</string>
+  <string name="card_info">Информация о карте</string>
+  <string name="issue_card">Выпустить карту</string>
+  <string name="block_card">Заблокировать карту</string>
+  <string name="rename">Переименовать</string>
+  <string name="input_new_name">Введите новое название</string>
+  <string name="save">Сохранить</string>
+  <string name="cancel">Отмена</string>
+  <string name="new_card">Новая карта</string>
+  <string name="operations_history">История обепераций</string>
+  <string name="validation_error_empty_card_name">Не удалось переименовать карту. Поле не может быть пустым</string>
+  <string name="card_successfully_renamed">Карта успешно переименована</string>
+  <string name="four_hidden_symbols">* * * *</string>
+  <string name="payments">Платежи</string>
+  <string name="card_actions">Операции над картой</string>
 </resources>
