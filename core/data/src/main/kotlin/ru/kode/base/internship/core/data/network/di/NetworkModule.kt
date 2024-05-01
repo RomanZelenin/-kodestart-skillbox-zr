@@ -4,6 +4,7 @@ import com.squareup.anvil.annotations.ContributesTo
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.json.Json
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -16,6 +17,7 @@ import ru.kode.base.internship.core.data.network.interceptor.AttachAccessTokenIn
 import ru.kode.base.internship.core.data.storage.persistence.TokensPersistence
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 
 @Module
 @ContributesTo(AppScope::class)
@@ -56,6 +58,41 @@ object NetworkModule {
       .baseUrl("$BASE_URL/")
       .build()
   }
+
+  @Provides
+  @ProductsModule
+  @SingleIn(AppScope::class)
+  fun provideRetrofit2(json: Json, @ProductsModule httpClient: OkHttpClient): Retrofit {
+    return Retrofit.Builder()
+      .addConverterFactory(json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
+      .client(httpClient)
+      .baseUrl("$PRODUCTS_BASE_URL/")
+      .build()
+  }
+
+  @Provides
+  @ProductsModule
+  @SingleIn(AppScope::class)
+  fun provideOkHttpClient2(): OkHttpClient {
+    val loggingInterceptor = HttpLoggingInterceptor { message ->
+      Timber.tag("OkHttp")
+      Timber.d(message)
+    }
+    loggingInterceptor.level = HTTP_LOG_LEVEL
+    return OkHttpClient.Builder()
+      .connectTimeout(HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+      .readTimeout(HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+      .writeTimeout(HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+      .addNetworkInterceptor(Interceptor { chain ->
+        val request = chain.request().newBuilder().apply {
+          addHeader("Accept", "application/json")
+          addHeader("Authorization", "Bearer 123")
+        }.build()
+        chain.proceed(request)
+      })
+      .addNetworkInterceptor(loggingInterceptor)
+      .build()
+  }
 }
 
 private const val BASE_URL = "https://stoplight.io/mocks/kode-api/kode-bank/151956"
@@ -65,3 +102,8 @@ private val HTTP_LOG_LEVEL = if (BuildConfig.RELEASE) {
 } else {
   HttpLoggingInterceptor.Level.BODY
 }
+
+private const val PRODUCTS_BASE_URL = "https://stoplight.io/mocks/kode-api/kode-bank/6096726"
+
+@Qualifier
+annotation class ProductsModule
