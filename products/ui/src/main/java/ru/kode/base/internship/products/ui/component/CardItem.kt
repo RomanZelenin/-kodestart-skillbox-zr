@@ -1,7 +1,6 @@
 package ru.kode.base.internship.products.ui.component
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Image
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -54,7 +53,7 @@ fun CardItem(modifier: Modifier = Modifier, card: Card) {
       )
     },
     trailingContent = {
-      Image(painter = painterResource(id = card.icon), contentDescription = null)
+      IconPlasticCard(number = card.number, logo = card.logo)
     }
   )
 }
@@ -70,8 +69,8 @@ private fun CardItemLightPreview() {
         type = CardType.PHYSICAL,
         icon = R.drawable.ic_master_card,
         logo = R.drawable.master_card_logo,
-        number = "7721",
-        expiryDate = "08/30",
+        number = "1222",
+        expiredAt = "08/30",
       )
     )
   }
@@ -89,7 +88,7 @@ private fun CardItemNightPreview() {
         icon = R.drawable.ic_master_card,
         logo = R.drawable.master_card_logo,
         number = "7721",
-        expiryDate = "08/30",
+        expiredAt = "08/30",
       )
     )
   }

@@ -28,4 +28,7 @@
   <string name="operations_history">История обепераций</string>
   <string name="validation_error_empty_card_name">Не удалось переименовать карту. Поле не может быть пустым</string>
   <string name="card_successfully_renamed">Карта успешно переименована</string>
+  <string name="four_hidden_symbols">* * * *</string>
+  <string name="payments">Платежи</string>
+  <string name="card_actions">Операции над картой</string>
 </resources>

@@ -4,68 +4,91 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.dimsuz.unicorn2.Machine
 import ru.dimsuz.unicorn2.machine
 import ru.kode.base.core.BaseViewModel
-import ru.kode.base.internship.products.domain.usecase.GetAccountByIdUseCase
-import ru.kode.base.internship.products.domain.usecase.GetCardByIdUseCase
+import ru.kode.base.internship.core.domain.entity.LceState
+import ru.kode.base.internship.products.domain.usecase.GetCardDetailsUseCase
+import ru.kode.base.internship.products.domain.usecase.RenameCardUseCase
 import ru.kode.base.internship.products.ui.carddetails.entity.CardDetailsErrorMessage
 import ru.kode.base.internship.routing.FlowEvent
 import javax.inject.Inject
 
 class CardDetailsViewModel @Inject constructor(
   private val flowEvents: MutableSharedFlow<FlowEvent>,
-  private val getCardByIdUseCase: GetCardByIdUseCase,
-  private val getAccountByIdUseCase: GetAccountByIdUseCase,
+  private val getCardsDetailsUseCase: GetCardDetailsUseCase,
+  private val renameCardUseCase: RenameCardUseCase,
 ) : BaseViewModel<CardDetailsViewState, CardDetailsIntents>() {
   override fun buildMachine(): Machine<CardDetailsViewState> {
+
     return machine {
       initial = CardDetailsViewState() to null
 
       onEach(intent(CardDetailsIntents::navigateOnBack)) {
+        transitionTo { state, _ -> state.copy(isShowNotification = false) }
         action { _, _, _ -> flowEvents.tryEmit(FlowEvent.NavigateBack) }
       }
 
-      onEach(intent(CardDetailsIntents::loadCardInfo)) {
-        action { _, _, cardId -> getCardByIdUseCase(cardId) }
+      onEach(intent(CardDetailsIntents::loadCards)) {
+        transitionTo { state, _ -> state.copy(loadStateCards = LceState.Loading) }
+        action { _, _, accountId -> getCardsDetailsUseCase.loadAccountCards(accountId) }
       }
 
-      onEach(getCardByIdUseCase.card) {
-        transitionTo { state, card -> state.copy(currentCard = card) }
+      onEach(getCardsDetailsUseCase.account) {
+        transitionTo { state, account ->
+          if (account != null) {
+            state.copy(
+              loadStateCards = LceState.Content,
+              cards = account.attachedCards,
+              money = account.money
+            )
+          } else {
+            state.copy(loadStateCards = LceState.Error(""))
+          }
+        }
       }
 
-      onEach(intent(CardDetailsIntents::loadAccount)) {
-        action { _, _, accountId -> getAccountByIdUseCase(accountId) }
+
+      onEach(intent(CardDetailsIntents::setCurrentCard)) {
+        transitionTo { state, id ->
+          state.copy(currentCard = id)
+        }
       }
 
-      onEach(getAccountByIdUseCase.account) {
-        transitionTo { state, account -> state.copy(account = account) }
-      }
 
       onEach(intent(CardDetailsIntents::showRenameCardDialog)) {
         transitionTo { state, isShow ->
-          state.copy(isShowRenameCardDialog = isShow)
+          state.copy(isShowCardRenaming = isShow)
         }
       }
 
       onEach(intent(CardDetailsIntents::saveCardName)) {
         transitionTo { state, name ->
-          if (name.isBlank()) {
+          if (name.trim().isEmpty()) {
             state.copy(
               errorMessage = CardDetailsErrorMessage.ValidationError.EmptyCardName,
-              isShowRenameCardDialog = false,
-              isShowSnackbar = true
+              isShowCardRenaming = false,
+              isShowNotification = true
             )
           } else {
+            state.copy(isShowCardRenaming = false)
+          }
+        }
+        action { _, newState, cardName -> renameCardUseCase(cardId = newState.currentCard, newName = cardName) }
+      }
+
+      onEach(renameCardUseCase.cardState) {
+        transitionTo { state, payload ->
+          if (payload !is LceState.None){
             state.copy(
-              isShowRenameCardDialog = false,
-              errorMessage = null,
-              currentCard = state.currentCard!!.copy(title = name),
-              isShowSnackbar = true
+              errorMessage = if (payload is LceState.Error) CardDetailsErrorMessage.ValidationError.EmptyCardName else null,
+              isShowNotification = true
             )
+          }else{
+            state
           }
         }
       }
 
       onEach(intent(CardDetailsIntents::dismissSnackbar)) {
-        transitionTo { state, _ -> state.copy(isShowSnackbar = false) }
+        transitionTo { state, _ -> state.copy(isShowNotification = false) }
       }
     }
   }

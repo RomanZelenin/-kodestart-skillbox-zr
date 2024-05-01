@@ -4,5 +4,4 @@ sealed class CardDetailsErrorMessage {
   sealed class ValidationError : CardDetailsErrorMessage() {
     data object EmptyCardName : ValidationError()
   }
-
 }

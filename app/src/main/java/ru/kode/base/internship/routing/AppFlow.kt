@@ -30,7 +30,6 @@ object AppFlow : GraphFlow() {
   ) : BaseFlowCoordinator<FlowEvent, Unit>(providers, flowEvents, viewModelStore) {
     override suspend fun onFlowStart() {
       navController.navigate(ScreenRoute.UserIdentification.route)
-      //navController.navigate(ScreenRoute.ProductsHome.route)
     }
 
     override suspend fun handleEvent(event: FlowEvent) {
@@ -38,7 +37,6 @@ object AppFlow : GraphFlow() {
         FlowEvent.UserIdentificationDismissed -> finish(Unit)
         FlowEvent.EnterPasswordDismissed -> navController.popBackStack()
         FlowEvent.LoginRequested -> navController.navigate(ScreenRoute.EnterPassword.route)
-        // TODO add navigation to next screen
         FlowEvent.UserLoggedIn -> navController.navigate(ScreenRoute.ProductsHome.route)
         FlowEvent.UserLoggedOut -> finish(Unit)
         is FlowEvent.CardDetails -> navController.navigate("${ScreenRoute.CardDetails.route}/${event.accountId.value}/${event.cardId.value}")
@@ -68,9 +66,6 @@ object AppFlow : GraphFlow() {
         cardId = Card.Id(it.arguments!!.getString("cardId")!!)
       )
     }
-    /*   animatedComposable(ScreenRoute.ServerNotFound.route, ScreenTransitionAnimation.Horizontal) {
-         ServerNotFound()
-       }*/
   }
 
   private val ScreenRoute.route: String

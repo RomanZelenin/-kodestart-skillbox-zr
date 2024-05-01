@@ -5,13 +5,16 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -23,22 +26,25 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,15 +55,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import kotlinx.coroutines.delay
 import ru.kode.base.core.compose.OnBackPressedHandler
 import ru.kode.base.core.rememberViewIntents
 import ru.kode.base.core.viewmodel.daggerViewModel
+import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.domain.entity.Account
 import ru.kode.base.internship.products.domain.entity.Card
 import ru.kode.base.internship.products.ui.R
@@ -68,8 +81,10 @@ import ru.kode.base.internship.ui.core.uikit.component.ErrorSnackbar
 import ru.kode.base.internship.ui.core.uikit.component.SuccessSnackbar
 import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
+import ru.kode.base.internship.ui.core.uikit.theme.Blue2
 
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CardDetailsScreen(
   accountId: Account.Id,
@@ -81,134 +96,144 @@ fun CardDetailsScreen(
     intents = rememberViewIntents()
   ) { state, intents ->
     OnBackPressedHandler(onBack = intents.navigateOnBack)
-    LaunchedEffect(key1 = Unit) {
-      intents.loadCardInfo(cardId)
-      intents.loadAccount(accountId)
+    LaunchedEffect(Unit) {
+      intents.setCurrentCard(cardId)
+      intents.loadCards(accountId)
     }
-    CardDetailsWithoutScaffold(state = state, intents = intents)
-  }
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-@Composable
-fun CardDetailsWithoutScaffold(
-  state: CardDetailsViewState = CardDetailsViewState(),
-  intents: CardDetailsIntents = CardDetailsIntents(),
-) {
-  Box(
-    modifier = Modifier
-      .statusBarsPadding()
-      .navigationBarsPadding()
-      .imePadding(),
-  ) {
-    if (state.isShowRenameCardDialog) {
-      RenameCardDialog(
-        onDismiss = { intents.showRenameCardDialog(false) },
-        onConfirm = { intents.saveCardName(it) }
-      )
-    }
-    Column(
+    Box(
       modifier = Modifier
-        .background(color = AppTheme.colors.backgroundSecondary)
-        .verticalScroll(rememberScrollState()),
-      horizontalAlignment = Alignment.CenterHorizontally,
+        .statusBarsPadding()
+        .navigationBarsPadding()
+        .imePadding(),
     ) {
-      CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-          containerColor = AppTheme.colors.backgroundSecondary,
-          scrolledContainerColor = AppTheme.colors.backgroundSecondary
-        ),
-        title = {
-          Text(
-            text = stringResource(R.string.cards),
-            color = AppTheme.colors.textPrimary,
-            style = AppTheme.typography.subtitle
-          )
-        },
-        navigationIcon = {
-          IconButton(onClick = { intents.navigateOnBack() }) {
-            Icon(
-              painter = painterResource(id = R.drawable.ic_left),
-              contentDescription = null,
-              tint = AppTheme.colors.textPrimary
+      if (state.isShowCardRenaming) {
+        RenameCardDialog(
+          onDismiss = { intents.showRenameCardDialog(false) },
+          onConfirm = { intents.saveCardName(it) }
+        )
+      }
+      Column(
+        modifier = Modifier
+          .background(color = AppTheme.colors.backgroundSecondary)
+          .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+      ) {
+        CenterAlignedTopAppBar(
+          colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = AppTheme.colors.backgroundSecondary,
+            scrolledContainerColor = AppTheme.colors.backgroundSecondary
+          ),
+          title = {
+            Text(
+              text = stringResource(R.string.cards),
+              color = AppTheme.colors.textPrimary,
+              style = AppTheme.typography.subtitle
             )
-          }
-        })
-      state.account?.let { account ->
-        state.currentCard?.let { card ->
-          val pagerState = rememberPagerState(
-            pageCount = { account.attachedCards.size + 1 },
-            //initialPage = account.attachedCards.indexOf(card.id)
-          )
-          HorizontalPager(state = pagerState, contentPadding = PaddingValues(top = 8.dp)) { page ->
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-              if (page < pagerState.pageCount - 1) {
-                PlasticCard(
-                  logo = card.logo,
-                  title = card.title,
-                  cardType = card.type,
-                  money = account.money,
-                  number = card.number,
-                  date = card.expiryDate,
-                  status = card.status
-                )
-              } else {
-                NewPlasticCard()
-              }
+          },
+          navigationIcon = {
+            IconButton(onClick = { intents.navigateOnBack() }) {
+              Icon(
+                painter = painterResource(id = R.drawable.ic_left),
+                contentDescription = null,
+                tint = AppTheme.colors.textPrimary
+              )
             }
-          }
-          Row(
-            Modifier
-              .wrapContentHeight()
-              .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-          ) {
-            repeat(pagerState.pageCount) { iteration ->
-              val color =
-                if (pagerState.currentPage == iteration) AppTheme.colors.contendAccentPrimary else Color.LightGray
+          })
 
-              if (iteration < pagerState.pageCount - 1) {
-                Box(
-                  modifier = Modifier
-                    .padding(6.dp, top = 24.dp, bottom = 8.dp)
-                    .clip(CircleShape)
-                    .background(color)
-                    .size(6.dp)
-                )
-              } else {
-                Icon(
-                  modifier = Modifier
-                    .padding(6.dp, top = 24.dp, bottom = 8.dp),
-                  painter = painterResource(id = R.drawable.ic_rub),
-                  contentDescription = null,
-                  tint = color
-                )
+        when (state.loadStateCards) {
+          LceState.Content -> {
+            val pagerState = rememberPagerState(
+              pageCount = { state.cards.size + 1 },
+              initialPage = maxOf(0, state.cards.indexOfFirst { card -> card.id == cardId })
+            )
+            if (pagerState.currentPage < state.cards.size)
+              intents.setCurrentCard(state.cards[pagerState.currentPage].id)
+            else
+              intents.setCurrentCard(Card.Id("none"))
+            HorizontalPager(state = pagerState, contentPadding = PaddingValues(top = 8.dp)) { page ->
+              Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                if (page < pagerState.pageCount - 1) {
+                  PlasticCard(
+                    logo = state.cards[page].logo,
+                    title = state.cards[page].title,
+                    cardType = state.cards[page].type,
+                    money = state.money!!,
+                    number = state.cards[page].number,
+                    expiredAt = state.cards[page].expiredAt,
+                    status = state.cards[page].status
+                  )
+                } else {
+                  NewPlasticCard()
+                }
               }
             }
+            BulletPageIndicators(pagerState = pagerState)
+
           }
+
+          is LceState.Error -> {}
+          LceState.Loading -> {}
+          LceState.None -> {}
+        }
+
+        if (state.currentCard != Card.Id("none")) {
+          Spacer(modifier = Modifier.height(24.dp))
+          TabBar()
+          Spacer(modifier = Modifier.height(24.dp))
+          CardActionsTab(intents = intents)
         }
       }
-      Spacer(modifier = Modifier.height(24.dp))
-      TabBar()
-      Spacer(modifier = Modifier.height(24.dp))
-      CardActionsTab(intents = intents, card = state.currentCard)
-    }
-    if (state.isShowSnackbar) {
-      Snackbar(
-        modifier = Modifier.align(Alignment.TopCenter),
-        message = state.errorMessage?.name() ?: stringResource(R.string.card_successfully_renamed),
-        onDismiss = intents.dismissSnackbar,
-        isError = state.errorMessage != null
-      )
-    }
+      if (state.isShowNotification) {
+        Snackbar(
+          modifier = Modifier
+            .align(Alignment.TopCenter),
+          message = state.errorMessage?.name() ?: stringResource(R.string.card_successfully_renamed),
+          onDismiss = intents.dismissSnackbar,
+          isError = state.errorMessage != null
+        )
+      }
 
+    }
+  }
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ColumnScope.BulletPageIndicators(pagerState: PagerState) {
+  Row(
+    Modifier
+      .wrapContentHeight()
+      .fillMaxWidth(),
+    horizontalArrangement = Arrangement.Center,
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    repeat(pagerState.pageCount) { iteration ->
+      val color =
+        if (pagerState.currentPage == iteration) AppTheme.colors.contendAccentPrimary else Color.LightGray
+      if (iteration < pagerState.pageCount - 1) {
+        Box(
+          modifier = Modifier
+            .padding(8.dp, top = 24.dp, bottom = 8.dp)
+            .clip(CircleShape)
+            .background(color)
+            .size(6.dp)
+        )
+      } else {
+        Icon(
+          modifier = Modifier
+            .padding(8.dp, top = 24.dp, bottom = 8.dp),
+          painter = painterResource(id = R.drawable.ic_rub),
+          contentDescription = null,
+          tint = color
+        )
+      }
+    }
   }
 }
 
 private val cardTabs = listOf(
   TabBarItem(icon = R.drawable.ic_history, title = R.string.operations_history) { },
-  TabBarItem(icon = R.drawable.ic_card, title = R.string.operations_history, selected = true) { },
-  TabBarItem(icon = R.drawable.ic_main_product, title = R.string.operations_history) { },
+  TabBarItem(icon = R.drawable.ic_card, title = R.string.card_actions, selected = true) { },
+  TabBarItem(icon = R.drawable.ic_main_product, title = R.string.payments) { },
 )
 
 @Composable
@@ -244,17 +269,17 @@ private val cardActions = listOf(
   CardActionItem(
     icon = R.drawable.ic_account_details,
     title = R.string.account_details,
-    action = { cardDetailsIntents, card -> }
+    action = { _, _ -> }
   ),
-  CardActionItem(icon = R.drawable.ic_card_info, title = R.string.card_info, action = { cardDetailsIntents, card -> }),
+  CardActionItem(icon = R.drawable.ic_card_info, title = R.string.card_info, action = { _, _ -> }),
   CardActionItem(
     icon = R.drawable.ic_issue_card,
     title = R.string.issue_card,
-    action = { cardDetailsIntents, card -> }),
+    action = { _, _ -> }),
   CardActionItem(
     icon = R.drawable.ic_block_card,
     title = R.string.block_card,
-    action = { cardDetailsIntents, card -> }),
+    action = { _, _ -> }),
 )
 
 @Composable
@@ -290,27 +315,12 @@ private data class CardActionItem(
   val action: (CardDetailsIntents, Card?) -> Unit,
 )
 
-@Preview(showBackground = true)
-@Composable
-private fun CardDetailsWithoutScaffoldLightPreview() {
-  AppTheme {
-    CardDetailsWithoutScaffold()
-  }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
-@Composable
-private fun CardDetailsWithoutScaffoldNightPreview() {
-  AppTheme {
-    CardDetailsWithoutScaffold()
-  }
-}
-
 @Composable
 private fun ActionCardItem(modifier: Modifier = Modifier, @DrawableRes icon: Int, @StringRes title: Int) {
   Row(
     modifier = modifier
       .fillMaxWidth()
+      .background(color = AppTheme.colors.backgroundPrimary)
       .padding(16.dp),
     verticalAlignment = Alignment.CenterVertically
   ) {
@@ -337,63 +347,105 @@ private fun ActionCardItemPreview() {
   }
 }
 
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
+@Composable
+private fun ActionCardItemDarkPreview() {
+  AppTheme {
+    ActionCardItem(icon = R.drawable.ic_edit_card_name, title = R.string.rename_card)
+  }
+}
+
 @Composable
 private fun RenameCardDialog(onDismiss: () -> Unit = {}, onConfirm: (String) -> Unit = {}) {
+  val focusRequester = remember { FocusRequester() }
+  LaunchedEffect(Unit) {
+    delay(100)
+    focusRequester.requestFocus()
+  }
   var cardName by remember { mutableStateOf("") }
-  AlertDialog(
-    containerColor = AppTheme.colors.backgroundPrimary,
-    title = {
-      Text(
-        text = stringResource(R.string.rename),
-        color = AppTheme.colors.textPrimary,
-        //  style = AppTheme.typography.subtitle
-      )
-    },
-    text = {
-      Column {
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-          label = {
-            Text(
-              text = stringResource(R.string.input_new_name),
+  Dialog(onDismissRequest = { onDismiss() }) {
+    Surface(
+      shape = RoundedCornerShape(8.dp),
+      color = AppTheme.colors.backgroundSecondary
+    ) {
+      Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(16.dp)) {
+          Text(
+            text = stringResource(id = R.string.rename),
+            style = AppTheme.typography.subtitle,
+            color = AppTheme.colors.textPrimary
+          )
+          Spacer(modifier = Modifier.height(8.dp))
+          Text(
+            text = stringResource(id = R.string.input_new_name),
+            style = AppTheme.typography.caption1,
+            color = AppTheme.colors.textPrimary
+          )
+          Spacer(modifier = Modifier.height(18.dp))
+          BasicTextField(
+            cursorBrush = SolidColor(Blue2),
+            singleLine = true,
+            modifier = Modifier
+              .padding(6.dp)
+              .height(24.dp)
+              .border(0.5.dp, color = AppTheme.colors.contendTertiary, shape = RoundedCornerShape(6.dp))
+              .fillMaxWidth()
+              .focusRequester(focusRequester),
+            value = cardName,
+            onValueChange = { cardName = it },
+            textStyle = TextStyle.Default.copy(
               color = AppTheme.colors.textPrimary,
-              // style = AppTheme.typography.caption1
-            )
-          },
-          textStyle = TextStyle.Default.copy(color = AppTheme.colors.textPrimary),
-          value = cardName,
-          onValueChange = { cardName = it },
-          maxLines = 1,
-        )
-      }
-    },
-    onDismissRequest = onDismiss,
-    confirmButton = {
-      TextButton(onClick = { onConfirm(cardName) })
-      {
-        Text(
-          text = stringResource(R.string.save),
-          color = AppTheme.colors.contendAccentPrimary,
-          //  style = AppTheme.typography.subtitle
-        )
-      }
-    },
-    dismissButton = {
-      TextButton(onClick = onDismiss)
-      {
-        Text(
-          text = stringResource(R.string.cancel),
-          color = AppTheme.colors.contendAccentPrimary,
-          // style = AppTheme.typography.subtitle
-        )
+              fontSize = AppTheme.typography.caption1.fontSize,
+              fontFamily = AppTheme.typography.caption1.fontFamily,
+              fontWeight = AppTheme.typography.caption1.fontWeight,
+              fontStyle = AppTheme.typography.caption1.fontStyle
+            ),
+            decorationBox = { innerTextField ->
+              Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.Center) {
+                innerTextField()
+              }
+            }
+          )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        HorizontalDivider(color = AppTheme.colors.contendTertiary, thickness = 0.5.dp)
+        Row(modifier = Modifier.height(46.dp)) {
+          TextButton(
+            modifier = Modifier
+              .weight(1f)
+              .fillMaxHeight(),
+            onClick = { onDismiss() },
+            shape = RectangleShape
+          ) {
+            Text(text = stringResource(id = R.string.cancel), color = Blue2)
+          }
+          VerticalDivider(color = AppTheme.colors.contendTertiary, thickness = 0.5.dp)
+          TextButton(
+            modifier = Modifier
+              .weight(1f)
+              .fillMaxHeight(),
+            onClick = { onConfirm(cardName) },
+            shape = RectangleShape
+          ) {
+            Text(text = stringResource(id = R.string.save), color = Blue2)
+          }
+        }
       }
     }
-  )
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun RenameCardDialogPreview() {
+  AppTheme {
+    RenameCardDialog()
+  }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
+@Composable
+private fun RenameCardDialogDarkPreview() {
   AppTheme {
     RenameCardDialog()
   }
@@ -417,9 +469,9 @@ private fun Snackbar(
     hostState = snackbarHostState,
     snackbar = { snackBarData ->
       if (isError)
-        ErrorSnackbar(modifier = Modifier.padding(16.dp), message = snackBarData.visuals.message)
+        ErrorSnackbar(modifier = Modifier.padding(16.dp), message = snackBarData.visuals.message, onClose = onDismiss)
       else
-        SuccessSnackbar(modifier = Modifier.padding(16.dp), message = snackBarData.visuals.message)
+        SuccessSnackbar(modifier = Modifier.padding(16.dp), message = snackBarData.visuals.message, onClose = onDismiss)
     }
   )
 }

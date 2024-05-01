@@ -8,7 +8,7 @@ data class Account(
   val id: Id = Id(randomUuid()),
   val title: String,
   val money: Money,
-  val attachedCards: List<Card.Id>,
+  val attachedCards: List<Card>,
 ) {
   @JvmInline
   value class Id(val value: String)

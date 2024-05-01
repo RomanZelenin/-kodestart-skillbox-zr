@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,13 +24,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import format
 import ru.kode.base.internship.products.domain.entity.CardStatus
 import ru.kode.base.internship.products.domain.entity.CardType
-import ru.kode.base.internship.products.domain.entity.CurrencySigns
+import ru.kode.base.internship.products.domain.entity.CurrencySign
 import ru.kode.base.internship.products.domain.entity.Money
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 import ru.kode.base.internship.ui.core.uikit.theme.Red2
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun PlasticCard(
@@ -42,21 +44,21 @@ fun PlasticCard(
   money: Money,
   number: String,
   status: CardStatus,
-  date: String,
+  expiredAt: String,
 ) {
   Surface(
     modifier = modifier
       .height(160.dp)
       .width(272.dp),
     shape = RoundedCornerShape(8.dp),
-    tonalElevation = 8.dp,
+    shadowElevation = 8.dp,
     color = Color.Transparent
   )
   {
     Box {
       Image(
         painter = painterResource(id = R.drawable.visa_card_bg),
-        contentDescription = "Card Background",
+        contentDescription = null,
         contentScale = ContentScale.FillBounds
       )
       Column {
@@ -80,8 +82,12 @@ fun PlasticCard(
               maxLines = 1,
               overflow = TextOverflow.Ellipsis
             )
+
             Text(
-              text = stringResource(id = cardType.id).lowercase(),
+              text = when (cardType) {
+                CardType.PHYSICAL -> stringResource(id = R.string.physical)
+                CardType.VIRTUAL -> stringResource(id = R.string.virtual)
+              }.lowercase(),
               color = AppTheme.colors.textTertiary,
               style = AppTheme.typography.caption1
             )
@@ -108,7 +114,9 @@ fun PlasticCard(
             modifier = Modifier.padding(start = 16.dp),
             text = money.format(),
             color = Color.White,
-            style = AppTheme.typography.bodySemibold
+            style = AppTheme.typography.bodySemibold,
+            maxLines = 1,
+            overflow = TextOverflow.Clip
           )
         }
         Spacer(modifier = Modifier.height(25.dp))
@@ -118,8 +126,12 @@ fun PlasticCard(
             .fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
-          Text(text = "* * * *  ${number.takeLast(4)}", color = Color.White, style = AppTheme.typography.caption1)
-          Text(text = date, color = Color.White, style = AppTheme.typography.caption1)
+          Text(
+            text = "${stringResource(R.string.four_hidden_symbols)}  ${number.takeLast(4)}",
+            color = Color.White,
+            style = AppTheme.typography.caption1
+          )
+          Text(text = expiredAt.formatToDate(), color = Color.White, style = AppTheme.typography.caption1)
         }
       }
     }
@@ -134,10 +146,16 @@ private fun CreditCardPreview() {
       logo = R.drawable.master_card_logo,
       title = "Дополнительная карта",
       cardType = CardType.VIRTUAL,
-      money = Money("7 333, 00", CurrencySigns.RUB),
-      number = "7789",
-      date = "05/22",
+      money = Money("125555.3458", CurrencySign.RUB),
+      number = "7788",
+      expiredAt = "05/22",
       status = CardStatus.ACTIVE
     )
   }
+}
+
+private const val dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+private fun String.formatToDate(): String {
+  val date = SimpleDateFormat(dateTimePattern, Locale.getDefault()).parse(this)
+  return SimpleDateFormat("MM/yy", Locale.getDefault()).format(date!!)
 }
