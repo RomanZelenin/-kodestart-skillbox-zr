@@ -25,7 +25,7 @@ class DepositRepositoryImpl @Inject constructor(
       Deposit(
         id = Deposit.Id(id.toString()),
         title = name,
-        money = Money(amount = balance, sign = CurrencySign.RUB),
+        money = Money(amount = balance, sign = currency.toCurrencySign()),
         term = DepositTerms(rate = rate, date = closeDate)
       )
     }
