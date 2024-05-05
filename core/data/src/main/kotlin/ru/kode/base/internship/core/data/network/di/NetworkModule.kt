@@ -16,6 +16,7 @@ import ru.kode.base.internship.core.data.network.interceptor.AttachAccessTokenIn
 import ru.kode.base.internship.core.data.storage.persistence.TokensPersistence
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 
 @Module
 @ContributesTo(AppScope::class)
@@ -56,6 +57,17 @@ object NetworkModule {
       .baseUrl("$BASE_URL/")
       .build()
   }
+
+  @Provides
+  @ProductsModule
+  @SingleIn(AppScope::class)
+  fun provideRetrofit2(json: Json, httpClient: OkHttpClient): Retrofit {
+    return Retrofit.Builder()
+      .addConverterFactory(json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
+      .client(httpClient)
+      .baseUrl("$PRODUCTS_BASE_URL/")
+      .build()
+  }
 }
 
 private const val BASE_URL = "https://stoplight.io/mocks/kode-api/kode-bank/151956"
@@ -65,3 +77,8 @@ private val HTTP_LOG_LEVEL = if (BuildConfig.RELEASE) {
 } else {
   HttpLoggingInterceptor.Level.BODY
 }
+
+private const val PRODUCTS_BASE_URL = "https://stoplight.io/mocks/kode-api/kode-bank/6096726"
+
+@Qualifier
+annotation class ProductsModule

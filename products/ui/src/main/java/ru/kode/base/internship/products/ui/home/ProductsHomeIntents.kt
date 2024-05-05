@@ -1,5 +1,6 @@
 package ru.kode.base.internship.products.ui.home
 
+import androidx.compose.runtime.Immutable
 import ru.kode.base.core.BaseViewIntents
 import ru.kode.base.internship.products.domain.entity.Account
 import ru.kode.base.internship.products.domain.entity.Card
@@ -13,4 +14,5 @@ class ProductsHomeIntents : BaseViewIntents() {
   val showCardDetails = intent<AccountIdWithCardId>(name = "showCardDetails")
 }
 
+@Immutable
 data class AccountIdWithCardId(val accountId: Account.Id, val cardId: Card.Id)

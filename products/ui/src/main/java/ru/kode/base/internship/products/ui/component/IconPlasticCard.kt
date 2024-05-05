@@ -43,7 +43,7 @@ fun IconPlasticCard(modifier: Modifier = Modifier, number: String, @DrawableRes 
           .fillMaxSize()
           .padding(2.dp), horizontalAlignment = Alignment.End
       ) {
-        Text(text = number.takeLast(4),  color = AppTheme.colors.textButton, style = AppTheme.typography.caption2)
+        Text(text = number.takeLast(4), color = AppTheme.colors.textButton, style = AppTheme.typography.caption2)
         Image(painter = painterResource(id = logo), contentDescription = null)
       }
     }

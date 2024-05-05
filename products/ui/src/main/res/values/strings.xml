@@ -31,4 +31,5 @@
   <string name="four_hidden_symbols">* * * *</string>
   <string name="payments">Платежи</string>
   <string name="card_actions">Операции над картой</string>
+  <string name="rename_card_error_check_internet_connection">Не удалось переименовать карту. Проверьте соединение с интернетом</string>
 </resources>

@@ -22,13 +22,13 @@ class GetCardDetailsUseCase @Inject constructor(
   )
 
   val account: Flow<Account?>
-    get() = stateFlow.map{ it.account }.flatMapLatest { it }
+    get() = stateFlow.map { it.account }.flatMapLatest { it }
 
 
   suspend fun loadAccountCards(accountId: Account.Id) {
     setState { copy(cardsState = LceState.Loading) }
     try {
-      val account = accountsUseCase.accounts.map { it.firstOrNull { it.id == accountId }}
+      val account = accountsUseCase.accounts.map { it.firstOrNull { it.id == accountId } }
       setState { copy(cardsState = LceState.Content, account = account) }
     } catch (e: Exception) {
       setState { copy(cardsState = LceState.Error(e.message)) }

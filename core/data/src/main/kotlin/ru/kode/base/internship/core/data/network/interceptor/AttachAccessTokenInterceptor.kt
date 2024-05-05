@@ -7,7 +7,7 @@ import ru.kode.base.internship.core.data.storage.persistence.TokensPersistence
 import timber.log.Timber
 
 internal class AttachAccessTokenInterceptor(
-  private val authTokenPersistence: TokensPersistence
+  private val authTokenPersistence: TokensPersistence,
 ) : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     val newRequest = chain.request().addAccessToken(authTokenPersistence)
@@ -22,7 +22,7 @@ internal fun Request.addAccessToken(authPersistence: TokensPersistence): Request
     .apply {
       if (accessToken != null) {
         removeHeader(ACCESS_TOKEN_HEADER)
-        addHeader(ACCESS_TOKEN_HEADER, accessToken.value)
+        addHeader(ACCESS_TOKEN_HEADER, "Bearer " + accessToken.value)
       } else {
         Timber.d("access token is empty, nothing to attach")
       }

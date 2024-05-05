@@ -188,7 +188,7 @@ fun CardDetailsScreen(
           modifier = Modifier
             .align(Alignment.TopCenter),
           message = state.errorMessage?.name() ?: stringResource(R.string.card_successfully_renamed),
-          onDismiss = intents.dismissSnackbar,
+          onDismiss = intents.dismissNotification,
           isError = state.errorMessage != null
         )
       }
@@ -417,7 +417,7 @@ private fun RenameCardDialog(onDismiss: () -> Unit = {}, onConfirm: (String) -> 
             onClick = { onDismiss() },
             shape = RectangleShape
           ) {
-            Text(text = stringResource(id = R.string.cancel), color = Blue2)
+            Text(text = stringResource(id = R.string.cancel), color = Blue2, style = AppTheme.typography.bodyMedium)
           }
           VerticalDivider(color = AppTheme.colors.contendTertiary, thickness = 0.5.dp)
           TextButton(
@@ -427,7 +427,7 @@ private fun RenameCardDialog(onDismiss: () -> Unit = {}, onConfirm: (String) -> 
             onClick = { onConfirm(cardName) },
             shape = RectangleShape
           ) {
-            Text(text = stringResource(id = R.string.save), color = Blue2)
+            Text(text = stringResource(id = R.string.save), color = Blue2, style = AppTheme.typography.bodyMedium)
           }
         }
       }
@@ -481,6 +481,10 @@ private fun CardDetailsErrorMessage.name(): String {
   return when (this) {
     CardDetailsErrorMessage.ValidationError.EmptyCardName -> {
       stringResource(R.string.validation_error_empty_card_name)
+    }
+
+    CardDetailsErrorMessage.SyncCardName -> {
+      stringResource(R.string.rename_card_error_check_internet_connection)
     }
   }
 }

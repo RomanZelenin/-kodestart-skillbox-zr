@@ -9,8 +9,8 @@ import ru.kode.base.internship.products.ui.carddetails.entity.CardDetailsErrorMe
 @Immutable
 data class CardDetailsViewState(
   val currentCard: Card.Id = Card.Id("none"),
-  val loadStateCards:LceState = LceState.None,
-  val cards:List<Card> = emptyList(),
+  val loadStateCards: LceState = LceState.None,
+  val cards: List<Card> = emptyList(),
   val isShowCardRenaming: Boolean = false,
   val errorMessage: CardDetailsErrorMessage? = null,
   val isShowNotification: Boolean = false,

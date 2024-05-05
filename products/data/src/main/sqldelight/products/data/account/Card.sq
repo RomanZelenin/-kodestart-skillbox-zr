@@ -1,0 +1,27 @@
+CREATE TABLE Card (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    number TEXT NOT NULL,
+    status TEXT NOT NULL,
+    accountId INTEGER NOT NULL,
+    expiredAt TEXT NOT NULL,
+    paymentSystem TEXT NOT NULL,
+    type TEXT NOT NULL,
+    FOREIGN KEY (accountId) REFERENCES Account(id)
+);
+
+selectAll:
+SELECT * FROM Card;
+
+getAccountCards:
+SELECT * FROM Card
+WHERE accountId = ?;
+
+insertCardObject:
+INSERT OR REPLACE INTO Card(id, name, number, status, accountId, expiredAt, paymentSystem, type) VALUES ?;
+
+changeCardName:
+UPDATE Card SET name =? WHERE id=?;
+
+deleteAll:
+DELETE FROM Card;

@@ -71,23 +71,25 @@ class CardDetailsViewModel @Inject constructor(
             state.copy(isShowCardRenaming = false)
           }
         }
-        action { _, newState, cardName -> renameCardUseCase(cardId = newState.currentCard, newName = cardName) }
+        action { _, newState, cardName ->
+          if (cardName.trim().isNotEmpty()) renameCardUseCase(cardId = newState.currentCard, newName = cardName)
+        }
       }
 
       onEach(renameCardUseCase.cardState) {
-        transitionTo { state, payload ->
-          if (payload !is LceState.None){
+        transitionTo { state, cardState ->
+          if (cardState !is LceState.None) {
             state.copy(
-              errorMessage = if (payload is LceState.Error) CardDetailsErrorMessage.ValidationError.EmptyCardName else null,
+              errorMessage = if (cardState is LceState.Error) CardDetailsErrorMessage.SyncCardName else null,
               isShowNotification = true
             )
-          }else{
+          } else {
             state
           }
         }
       }
 
-      onEach(intent(CardDetailsIntents::dismissSnackbar)) {
+      onEach(intent(CardDetailsIntents::dismissNotification)) {
         transitionTo { state, _ -> state.copy(isShowNotification = false) }
       }
     }

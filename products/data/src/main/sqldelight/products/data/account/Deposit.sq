@@ -1,0 +1,18 @@
+CREATE TABLE Deposit (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    balance TEXT NOT NULL,
+    currency TEXT NOT NULL,
+    status TEXT NOT NULL,
+    closeDate TEXT NOT NULL,
+    rate TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM Deposit;
+
+insertDepositObject:
+INSERT OR REPLACE  INTO Deposit(id, name, balance, currency, status, closeDate, rate) VALUES ?;
+
+deleteAll:
+DELETE FROM Deposit;
