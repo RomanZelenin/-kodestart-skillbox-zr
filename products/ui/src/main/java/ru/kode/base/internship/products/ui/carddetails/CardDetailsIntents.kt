@@ -8,7 +8,7 @@ class CardDetailsIntents : BaseViewIntents() {
   val navigateOnBack = intent(name = "navigateOnBack")
   val showRenameCardDialog = intent<Boolean>(name = "renameCardDialog")
   val saveCardName = intent<String>(name = "saveCardName")
-  val dismissSnackbar = intent(name = "dismissSnackbar")
+  val dismissNotification = intent(name = "dismissNotification")
   val loadCards = intent<Account.Id>(name = "loadCards")
   val setCurrentCard = intent<Card.Id>(name = "setCurrentCard")
 }

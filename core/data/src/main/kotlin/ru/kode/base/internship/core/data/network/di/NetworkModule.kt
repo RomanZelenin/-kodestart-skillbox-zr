@@ -4,7 +4,6 @@ import com.squareup.anvil.annotations.ContributesTo
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.json.Json
-import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -62,35 +61,11 @@ object NetworkModule {
   @Provides
   @ProductsModule
   @SingleIn(AppScope::class)
-  fun provideRetrofit2(json: Json, @ProductsModule httpClient: OkHttpClient): Retrofit {
+  fun provideRetrofit2(json: Json, httpClient: OkHttpClient): Retrofit {
     return Retrofit.Builder()
       .addConverterFactory(json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
       .client(httpClient)
       .baseUrl("$PRODUCTS_BASE_URL/")
-      .build()
-  }
-
-  @Provides
-  @ProductsModule
-  @SingleIn(AppScope::class)
-  fun provideOkHttpClient2(): OkHttpClient {
-    val loggingInterceptor = HttpLoggingInterceptor { message ->
-      Timber.tag("OkHttp")
-      Timber.d(message)
-    }
-    loggingInterceptor.level = HTTP_LOG_LEVEL
-    return OkHttpClient.Builder()
-      .connectTimeout(HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
-      .readTimeout(HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
-      .writeTimeout(HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
-      .addNetworkInterceptor(Interceptor { chain ->
-        val request = chain.request().newBuilder().apply {
-          addHeader("Accept", "application/json")
-          addHeader("Authorization", "Bearer 123")
-        }.build()
-        chain.proceed(request)
-      })
-      .addNetworkInterceptor(loggingInterceptor)
       .build()
   }
 }

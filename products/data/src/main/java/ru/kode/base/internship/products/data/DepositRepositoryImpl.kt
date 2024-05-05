@@ -34,25 +34,23 @@ class DepositRepositoryImpl @Inject constructor(
 
 
   override suspend fun fetchDeposits() {
-    loadData()
-  }
-
-  private suspend fun loadData() {
-    productsDatabase.depositQueries.deleteAll()
-    productsApi.getDeposits().deposits.forEach {
+    val deposits = productsApi.getDeposits().deposits.map {
       val depositWithTerms =
         productsApi.getDeposit(id = it.depositId.toString(), prefer = "code=200, example=android-${it.depositId}")
-      productsDatabase.depositQueries.insertDepositObject(
-        products.data.account.Deposit(
-          id = it.depositId.toLong(),
-          name = it.name,
-          balance = it.balance.toString(),
-          currency = it.currency,
-          status = it.status,
-          closeDate = depositWithTerms.closeDate,
-          rate = depositWithTerms.rate.toString()
-        )
+      products.data.account.Deposit(
+        id = it.depositId.toLong(),
+        name = depositWithTerms.name,
+        balance = depositWithTerms.balance.toString(),
+        currency = depositWithTerms.currency,
+        status = depositWithTerms.status,
+        closeDate = depositWithTerms.closeDate,
+        rate = depositWithTerms.rate.toString()
       )
+    }.toList()
+
+    productsDatabase.depositQueries.transaction {
+      productsDatabase.depositQueries.deleteAll()
+      deposits.forEach { productsDatabase.depositQueries.insertDepositObject(it) }
     }
   }
 }
